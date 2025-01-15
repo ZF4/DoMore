@@ -18,7 +18,7 @@ extension DeviceActivityName {
 // I want to remove the application shield restriction when the child accumulates enough usage for a set of guardian-selected encouraged apps
 extension DeviceActivityEvent.Name {
     // Set the name of the event to "encouraged"
-    static let encouraged = Self("encouraged")
+    static let discourage = Self("discourage")
 }
 
 // The Device Activity schedule represents the time bounds in which my extension will monitor for activity
@@ -36,8 +36,8 @@ class MySchedule {
         print("Hour is: ", Calendar.current.dateComponents([.hour, .minute], from: Date()).hour!)
 
         let events: [DeviceActivityEvent.Name: DeviceActivityEvent] = [
-            .encouraged: DeviceActivityEvent(
-                applications: MyModel.shared.selectionToEncourage.applicationTokens,
+            .discourage: DeviceActivityEvent(
+                applications: MyModel.shared.selectionToDiscourage.applicationTokens,
                 threshold: DateComponents(minute: 5)
             )
         ]

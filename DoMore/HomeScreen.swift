@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import FamilyControls
+import ManagedSettings
 
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
@@ -19,38 +20,40 @@ struct HomeScreen: View {
     // @State private var milesCompleted: Double = 2.5
     // @State private var milesGoal: Double = 3.0
     @State var isDiscouragedPresented = false
-    @State var isTimerSettingPresented = false
+    @State var isBlockOptionPresented = false
     @EnvironmentObject var model: MyModel
+    @State private var isPopupVisible = false
+    @State private var isSubPopupVisible = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Header Section
-//                VStack(alignment: .leading) {
-//                    Text("Daily Progress")
-//                        .font(.title)
-//                        .fontWeight(.bold)
-//                    ProgressCard(title: "Steps", current: Double(stepsTaken), goal: Double(stepsGoal), unit: "steps")
-//                    Text("You're just \(stepsGoal - stepsTaken) steps away from unlocking your favorite apps!")
-//                        .font(.subheadline)
-//                        .foregroundColor(.gray)
-//                }
-//                .padding()
-//                
-//                 //Active Blocked Apps Section
-//                VStack(alignment: .leading) {
-//                    Text("Blocked Apps")
-//                        .font(.title2)
-//                        .fontWeight(.bold)
-//                    ScrollView(.horizontal, showsIndicators: false) {
-//                        HStack(spacing: 15) {
-//                            ForEach(1..<5) { index in
-//                                BlockedAppCard(appName: "App \(index)", progress: 0.75)
-//                            }
-//                        }
-//                    }
-//                }
-//                .padding(.horizontal)
+                //                VStack(alignment: .leading) {
+                //                    Text("Daily Progress")
+                //                        .font(.title)
+                //                        .fontWeight(.bold)
+                //                    ProgressCard(title: "Steps", current: Double(stepsTaken), goal: Double(stepsGoal), unit: "steps")
+                //                    Text("You're just \(stepsGoal - stepsTaken) steps away from unlocking your favorite apps!")
+                //                        .font(.subheadline)
+                //                        .foregroundColor(.gray)
+                //                }
+                //                .padding()
+                //
+                //                 //Active Blocked Apps Section
+                //                VStack(alignment: .leading) {
+                //                    Text("Blocked Apps")
+                //                        .font(.title2)
+                //                        .fontWeight(.bold)
+                //                    ScrollView(.horizontal, showsIndicators: false) {
+                //                        HStack(spacing: 15) {
+                //                            ForEach(1..<5) { index in
+                //                                BlockedAppCard(appName: "App \(index)", progress: 0.75)
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //                .padding(.horizontal)
                 
                 Button(action: {
                     isDiscouragedPresented = true
@@ -66,18 +69,33 @@ struct HomeScreen: View {
                 .padding(.horizontal)
                 .familyActivityPicker(isPresented: $isDiscouragedPresented, selection: $model.selectionToDiscourage)
                 .onChange(of: model.selectionToDiscourage) { selection, oldSelection in
-                    isTimerSettingPresented = true // Open timer setting interface after selecting apps
+                    // Remove this line since we're not using isBlockOptionPresented anymore
+                    isBlockOptionPresented = true
                 }
-                // Timer Setting Interface
-                if isTimerSettingPresented {
-                    TimerSettingView(isPresented: $isTimerSettingPresented, onBlock: {
+                Button(action: {
+                    isPopupVisible = true
+                }) {
+                    Text("SELECT MODE")
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+                }
+                .padding(.horizontal, 30)
+                .padding(.bottom, 50)
+                
+                // Timer Setting Interface - show it when apps are selected
+                if !blockState.isEmpty && (isBlockOptionPresented || blockState[0].blockActive == true) {
+                    TimerSettingView(isPresented: .constant(true), onBlock: {
                         toggleBlockState(active: true)
                     }, onUnblock: {
                         toggleBlockState(active: false)
                     })
-                        .environmentObject(model)
+                    .environmentObject(model)
                 }
-
+                
                 // Display current block state
                 if let currentState = blockState.first {
                     Text("Block Status: \(currentState.blockActive ? "Active" : "Inactive")")
@@ -85,32 +103,36 @@ struct HomeScreen: View {
                 }
                 
                 // Fitness Challenges Section
-//                VStack(alignment: .leading) {
-//                    Text("Fitness Challenges")
-//                        .font(.title2)
-//                        .fontWeight(.bold)
-//                    VStack(spacing: 10) {
-//                        ChallengeCard(title: "Morning Run", details: "3 miles left")
-//                        ChallengeCard(title: "Unlock Instagram", details: "15 minutes of exercise")
-//                    }
-//                }
-//                .padding()
-//                
-//                 //Time Reclaimed Section
-//                VStack(alignment: .leading) {
-//                    Text("Time Reclaimed")
-//                        .font(.title2)
-//                        .fontWeight(.bold)
-//                    Text("Total Time Saved: 1h")
-//                        .font(.headline)
-//                    Text("5 miles walked this week")
-//                        .font(.subheadline)
-//                        .foregroundColor(.gray)
-//                }
-//                .padding(.horizontal)
+                //                VStack(alignment: .leading) {
+                //                    Text("Fitness Challenges")
+                //                        .font(.title2)
+                //                        .fontWeight(.bold)
+                //                    VStack(spacing: 10) {
+                //                        ChallengeCard(title: "Morning Run", details: "3 miles left")
+                //                        ChallengeCard(title: "Unlock Instagram", details: "15 minutes of exercise")
+                //                    }
+                //                }
+                //                .padding()
+                //
+                //                 //Time Reclaimed Section
+                //                VStack(alignment: .leading) {
+                //                    Text("Time Reclaimed")
+                //                        .font(.title2)
+                //                        .fontWeight(.bold)
+                //                    Text("Total Time Saved: 1h")
+                //                        .font(.headline)
+                //                    Text("5 miles walked this week")
+                //                        .font(.subheadline)
+                //                        .foregroundColor(.gray)
+                //                }
+                //                .padding(.horizontal)
+            }
+            .popover(isPresented: $isPopupVisible) {
+                ModePopupView()
             }
         }
     }
+    
     private func toggleBlockState(active: Bool) {
         if let existingState = blockState.first {
             existingState.blockActive = active
@@ -130,27 +152,27 @@ struct TimerSettingView: View {
     @State private var selectedMinutes: Int = 0
     @State private var isTimerRunning = false
     @EnvironmentObject var model: MyModel
-
+    
     var onBlock: () -> Void
     var onUnblock: () -> Void
-
+    
     var body: some View {
         VStack {
             // Block Apps Button
             Button(action: {
-                 model.setShieldRestrictions()
-                 onBlock()
-             }) {
-                 Text("Block Apps")
-                     .font(.headline)
-                     .foregroundColor(.white)
-                     .frame(maxWidth: .infinity)
-                     .padding(8)
-                     .background(Color.red)
-                     .cornerRadius(15)
-             }
-             .padding(.horizontal)
-
+                model.setShieldRestrictions()
+                onBlock()
+            }) {
+                Text("Block Apps")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(8)
+                    .background(Color.red)
+                    .cornerRadius(15)
+            }
+            .padding(.horizontal)
+            
             
             // Unblock Apps Button
             Button(action: {
@@ -168,16 +190,7 @@ struct TimerSettingView: View {
             .padding(.horizontal)
         }
     }
-    
-    // Function to format remaining time as HH:MM:SS
-    private func formattedTime(from timeInterval: TimeInterval) -> String {
-        let hours = Int(timeInterval) / 3600
-        let minutes = Int(timeInterval) / 60 % 60
-        let seconds = Int(timeInterval) % 60
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-    }
 }
-
 
 struct ProgressCard: View {
     var title: String
@@ -268,5 +281,6 @@ struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
         HomeScreen()
             .environmentObject(MyModel())
+            .modelContainer(for: BlockState.self, inMemory: true)
     }
 }

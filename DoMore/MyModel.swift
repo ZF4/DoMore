@@ -11,12 +11,11 @@ class MyModel: ObservableObject {
     let store = ManagedSettingsStore()
     
     @Published var selectionToDiscourage: FamilyActivitySelection
-    @Published var selectionToEncourage: FamilyActivitySelection
     @Published var blockState: BlockState?
+    // Update the hasActiveRestrictions computed property
     
     init() {
         selectionToDiscourage = FamilyActivitySelection()
-        selectionToEncourage = FamilyActivitySelection()
     
     }
     
@@ -27,8 +26,6 @@ class MyModel: ObservableObject {
     func setShieldRestrictions() {
         store.shield.applications = selectionToDiscourage.applicationTokens.isEmpty ? nil : selectionToDiscourage.applicationTokens
         store.shield.applicationCategories = selectionToDiscourage.categoryTokens.isEmpty ? nil : ShieldSettings.ActivityCategoryPolicy.specific(selectionToDiscourage.categoryTokens)
-        
-        // Apply the application configuration as needed
     }
     
     func resetDiscouragedItems() {
