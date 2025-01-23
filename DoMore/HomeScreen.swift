@@ -12,18 +12,15 @@ import ManagedSettings
 
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var blockState: [BlockState]
+    @Query private var modes: [BlockModel]
     // @State private var stepsTaken: Int = 3500
     // @State private var stepsGoal: Int = 5000
     // @State private var exerciseMinutes: Int = 20
     // @State private var exerciseGoal: Int = 30
     // @State private var milesCompleted: Double = 2.5
     // @State private var milesGoal: Double = 3.0
-    @State var isDiscouragedPresented = false
-    @State var isBlockOptionPresented = false
     @EnvironmentObject var model: MyModel
     @State private var isPopupVisible = false
-    @State private var isSubPopupVisible = false
     
     var body: some View {
         ScrollView {
@@ -56,23 +53,6 @@ struct HomeScreen: View {
                 //                .padding(.horizontal)
                 
                 Button(action: {
-                    isDiscouragedPresented = true
-                }) {
-                    Text("Manage Block List")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(8)
-                        .background(Color.blue)
-                        .cornerRadius(15)
-                }
-                .padding(.horizontal)
-                .familyActivityPicker(isPresented: $isDiscouragedPresented, selection: $model.selectionToDiscourage)
-                .onChange(of: model.selectionToDiscourage) { selection, oldSelection in
-                    // Remove this line since we're not using isBlockOptionPresented anymore
-                    isBlockOptionPresented = true
-                }
-                Button(action: {
                     isPopupVisible = true
                 }) {
                     Text("SELECT MODE")
@@ -84,22 +64,15 @@ struct HomeScreen: View {
                         .shadow(radius: 4)
                 }
                 .padding(.horizontal, 30)
-                .padding(.bottom, 50)
+//                .padding(.bottom, 50)
                 
-                // Timer Setting Interface - show it when apps are selected
-                if !blockState.isEmpty && (isBlockOptionPresented || blockState[0].blockActive == true) {
-                    TimerSettingView(isPresented: .constant(true), onBlock: {
-                        toggleBlockState(active: true)
-                    }, onUnblock: {
-                        toggleBlockState(active: false)
-                    })
-                    .environmentObject(model)
-                }
+                TimerSettingView(isPresented: .constant(true))
+                .environmentObject(model)
                 
                 // Display current block state
-                if let currentState = blockState.first {
-                    Text("Block Status: \(currentState.blockActive ? "Active" : "Inactive")")
-                        .foregroundColor(currentState.blockActive ? .red : .green)
+                if let currentState = modes.first(where: { $0.isActive }) {
+                    Text("Block Status: \(currentState.isActive ? "Active" : "Inactive")")
+                        .foregroundColor(currentState.isActive ? .red : .green)
                 }
                 
                 // Fitness Challenges Section
@@ -133,35 +106,38 @@ struct HomeScreen: View {
         }
     }
     
-    private func toggleBlockState(active: Bool) {
-        if let existingState = blockState.first {
-            existingState.blockActive = active
-        } else {
-            let newState = BlockState(blockActive: active)
-            modelContext.insert(newState)
-        }
-        try? modelContext.save()
-    }
+//    private func toggleBlockState(active: Bool) {
+//        if let existingState = modes.first {
+//            existingState.isActive = active
+//        } else {
+//            let newState = BlockModel(isActive: active)
+//            modelContext.insert(newState)
+//        }
+//        try? modelContext.save()
+//    }
 }
 
 // MARK: - Subcomponents
 
 struct TimerSettingView: View {
     @Binding var isPresented: Bool
-    @State private var selectedHours: Int = 0
-    @State private var selectedMinutes: Int = 0
-    @State private var isTimerRunning = false
     @EnvironmentObject var model: MyModel
+    @Environment(\.modelContext) private var modelContext
+    @Query private var modes: [BlockModel]
     
-    var onBlock: () -> Void
-    var onUnblock: () -> Void
+//    var onBlock: () -> Void
+//    var onUnblock: () -> Void
     
     var body: some View {
         VStack {
             // Block Apps Button
             Button(action: {
                 model.setShieldRestrictions()
-                onBlock()
+                // Set active block to true
+                if let activeMode = modes.first(where: { $0.isSelected }) {
+                    activeMode.isActive = true
+                    try? modelContext.save()
+                }
             }) {
                 Text("Block Apps")
                     .font(.headline)
@@ -173,11 +149,14 @@ struct TimerSettingView: View {
             }
             .padding(.horizontal)
             
-            
             // Unblock Apps Button
             Button(action: {
                 model.resetDiscouragedItems()
-                onUnblock()
+                // Set all blocks to inactive
+                for mode in modes {
+                    mode.isActive = false
+                }
+                try? modelContext.save()
             }) {
                 Text("Unblock Apps")
                     .font(.headline)
@@ -281,6 +260,6 @@ struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
         HomeScreen()
             .environmentObject(MyModel())
-            .modelContainer(for: BlockState.self, inMemory: true)
+            .modelContainer(for: BlockModel.self, inMemory: true)
     }
 }

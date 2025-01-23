@@ -9,20 +9,11 @@ import SwiftData
 import Foundation
 
 @Model
-final class BlockState {
-    @Attribute(.unique) var id: UUID
-    var blockActive: Bool
-
-    init(blockActive: Bool = false) {
-        self.id = UUID()
-        self.blockActive = blockActive
-    }
-}
-
-@Model
-final class ModeModel {
+final class BlockModel {
     @Attribute(.unique) var id: UUID
     var title: String
+    var isActive: Bool = false
+    var isSelected: Bool = false
     var applicationTokens: Data?
     var categoryTokens: Data?
 

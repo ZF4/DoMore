@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import FamilyControls
 
 struct ModePopupView: View {
+    @EnvironmentObject var model: MyModel
     @State private var addNewMode: Bool = false
     @State private var showingPopover = false
     var body: some View {
@@ -20,6 +22,7 @@ struct ModePopupView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        unselectModes()
                         showingPopover = true
                     } label: {
                         Image(systemName: "plus")
@@ -31,10 +34,14 @@ struct ModePopupView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("SELECT MODE")
             .popover(isPresented: $showingPopover) {
-                CreateModeView()
+                CreateModeView(currentMode: .constant(nil))
             }
             Spacer()
+            
         }
+    }
+    private func unselectModes() {
+        model.resetDiscouragedItems()
     }
 }
 

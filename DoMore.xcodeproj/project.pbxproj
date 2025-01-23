@@ -29,9 +29,22 @@
 		B64E3B632D3345A800E663E9 /* DoMoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoMoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B68707082D3F0CF0006493B3 /* Exceptions for "DoMore" folder in "DoMore" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B64E3B482D3345A600E663E9 /* DoMore */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B64E3B4B2D3345A600E663E9 /* DoMore */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B68707082D3F0CF0006493B3 /* Exceptions for "DoMore" folder in "DoMore" target */,
+			);
 			path = DoMore;
 			sourceTree = "<group>";
 		};
@@ -400,6 +413,9 @@
 				DEVELOPMENT_TEAM = GMMGZ4UUAF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DoMore/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Allow this app to read your Health data.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Allow this app to write your Health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -431,6 +447,9 @@
 				DEVELOPMENT_TEAM = GMMGZ4UUAF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DoMore/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Allow this app to read your Health data.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Allow this app to write your Health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
