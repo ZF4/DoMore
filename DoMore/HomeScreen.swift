@@ -12,32 +12,52 @@ import ManagedSettings
 
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var modes: [BlockModel]
-    // @State private var stepsTaken: Int = 3500
-    // @State private var stepsGoal: Int = 5000
-    // @State private var exerciseMinutes: Int = 20
-    // @State private var exerciseGoal: Int = 30
-    // @State private var milesCompleted: Double = 2.5
-    // @State private var milesGoal: Double = 3.0
     @EnvironmentObject var model: MyModel
-    @State private var isPopupVisible = false
+    @Query private var modes: [BlockModel]
+    @Query private var goals: [ExerciseModel]
+    @State private var stepsTaken: Double = 0.0
+    @State private var stepsGoal: Double = 5000
+    @State private var exerciseMinutes: Double = 0.0
+    @State private var exerciseGoal: Double = 30
+    @State private var isAuthorized = false
+    @State private var isModePopupVisible = false
+    @State private var isGoalSet = false
+    @State private var isExercisePopupVisible = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Header Section
-                //                VStack(alignment: .leading) {
-                //                    Text("Daily Progress")
-                //                        .font(.title)
-                //                        .fontWeight(.bold)
-                //                    ProgressCard(title: "Steps", current: Double(stepsTaken), goal: Double(stepsGoal), unit: "steps")
-                //                    Text("You're just \(stepsGoal - stepsTaken) steps away from unlocking your favorite apps!")
-                //                        .font(.subheadline)
-                //                        .foregroundColor(.gray)
-                //                }
-                //                .padding()
-                //
-                //                 //Active Blocked Apps Section
+                VStack(alignment: .leading) {
+                    Text("Daily Progress")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    if isAuthorized {
+                        if !modes.isEmpty {
+                            ForEach(goals) { goal in
+                                if goal.exerciseType == .steps {
+                                    ProgressCard(title: goal.title, current: stepsTaken, goal: Double(goal.value), unit: goal.title.lowercased())
+                                } else if goal.exerciseType == .minutes {
+                                    ProgressCard(title: goal.title, current: exerciseMinutes, goal: Double(goal.value), unit: goal.title.lowercased())
+                                }
+                                
+                                Text("You're just \(Int(stepsGoal) - Int(stepsTaken)) steps away from unlocking your favorite apps!")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                        } else {
+                            Text("Set your exercise goal to begin your blocking session!")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                    } else {
+                        Text("Please authorize HealthKit access to view progress.")
+                            .foregroundColor(.gray)
+                            .font(.subheadline)
+                    }
+                }
+                .padding()
+                //Active Blocked Apps Section
                 //                VStack(alignment: .leading) {
                 //                    Text("Blocked Apps")
                 //                        .font(.title2)
@@ -53,7 +73,7 @@ struct HomeScreen: View {
                 //                .padding(.horizontal)
                 
                 Button(action: {
-                    isPopupVisible = true
+                    isModePopupVisible = true
                 }) {
                     Text("SELECT MODE")
                         .font(.headline)
@@ -64,10 +84,22 @@ struct HomeScreen: View {
                         .shadow(radius: 4)
                 }
                 .padding(.horizontal, 30)
-//                .padding(.bottom, 50)
+                
+                Button(action: {
+                    isExercisePopupVisible = true
+                }) {
+                    Text("SET GOALS")
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(radius: 4)
+                }
+                .padding(.horizontal, 30)
                 
                 TimerSettingView(isPresented: .constant(true))
-                .environmentObject(model)
+                    .environmentObject(model)
                 
                 // Display current block state
                 if let currentState = modes.first(where: { $0.isActive }) {
@@ -100,21 +132,35 @@ struct HomeScreen: View {
                 //                }
                 //                .padding(.horizontal)
             }
-            .popover(isPresented: $isPopupVisible) {
+            .onAppear(perform: fetchHealthData)
+            .popover(isPresented: $isModePopupVisible) {
                 ModePopupView()
+            }
+            .popover(isPresented: $isExercisePopupVisible) {
+                ExercisePopupView()
             }
         }
     }
-    
-//    private func toggleBlockState(active: Bool) {
-//        if let existingState = modes.first {
-//            existingState.isActive = active
-//        } else {
-//            let newState = BlockModel(isActive: active)
-//            modelContext.insert(newState)
-//        }
-//        try? modelContext.save()
-//    }
+    private func fetchHealthData() {
+        HealthKitManager.shared.requestAuthorization { success, error in
+            if success {
+                isAuthorized = true
+                HealthKitManager.shared.fetchStepCount { steps in
+                    DispatchQueue.main.async {
+                        stepsTaken = steps
+                    }
+                }
+                HealthKitManager.shared.fetchExerciseMinutes { minutes in
+                    DispatchQueue.main.async {
+                        exerciseMinutes = minutes
+                    }
+                }
+            } else {
+                isAuthorized = false
+                print("Authorization failed: \(String(describing: error))")
+            }
+        }
+    }
 }
 
 // MARK: - Subcomponents
@@ -125,8 +171,8 @@ struct TimerSettingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var modes: [BlockModel]
     
-//    var onBlock: () -> Void
-//    var onUnblock: () -> Void
+    //    var onBlock: () -> Void
+    //    var onUnblock: () -> Void
     
     var body: some View {
         VStack {
@@ -261,5 +307,6 @@ struct HomeScreen_Previews: PreviewProvider {
         HomeScreen()
             .environmentObject(MyModel())
             .modelContainer(for: BlockModel.self, inMemory: true)
+            .modelContainer(for: ExerciseModel.self, inMemory: true)
     }
 }

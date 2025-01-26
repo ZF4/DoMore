@@ -15,7 +15,7 @@ struct Root: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [BlockModel.self])
+                .modelContainer(for: [BlockModel.self, ExerciseModel.self])
                 .environmentObject(model)
                 .environmentObject(store)
         }
