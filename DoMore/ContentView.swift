@@ -37,5 +37,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(MyModel())
-//        .modelContainer(for: Item.self, inMemory: true)
 }
