@@ -73,5 +73,27 @@ final class HealthKitManager {
         
         healthStore.execute(query)
     }
+    
+    func startObservingHealthData(stepsHandler: @escaping (Double) -> Void, exerciseHandler: @escaping (Double) -> Void) {
+        guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount),
+              let exerciseType = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) else {
+            return
+        }
+        
+        let stepQuery = HKObserverQuery(sampleType: stepType, predicate: nil) { _, _, error in
+            if error == nil {
+                self.fetchStepCount(completion: stepsHandler)
+            }
+        }
+        
+        let exerciseQuery = HKObserverQuery(sampleType: exerciseType, predicate: nil) { _, _, error in
+            if error == nil {
+                self.fetchExerciseMinutes(completion: exerciseHandler)
+            }
+        }
+        
+        healthStore.execute(stepQuery)
+        healthStore.execute(exerciseQuery)
+    }
 }
 

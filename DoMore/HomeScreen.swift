@@ -35,20 +35,21 @@ struct HomeScreen: View {
                     if isAuthorized {
                         if !modes.isEmpty {
                             ForEach(goals) { goal in
-                                if goal.exerciseType == .steps {
-                                    ProgressCard(title: goal.title, current: stepsTaken, goal: Double(goal.value), unit: goal.title.lowercased())
-                                } else if goal.exerciseType == .minutes {
-                                    ProgressCard(title: goal.title, current: exerciseMinutes, goal: Double(goal.value), unit: goal.title.lowercased())
+                                if goal.isSelected {
+                                    if goal.exerciseType == .steps {
+                                        ProgressCard(title: goal.title, current: stepsTaken, goal: Double(goal.value), unit: goal.title.lowercased())
+                                    } else if goal.exerciseType == .minutes {
+                                        ProgressCard(title: goal.title, current: exerciseMinutes, goal: Double(goal.value), unit: goal.title.lowercased())
+                                    }
+                                    
+                                    Text("You're just \(Int(stepsGoal) - Int(stepsTaken)) steps away from unlocking your favorite apps!")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
                                 }
                                 
-                                Text("You're just \(Int(stepsGoal) - Int(stepsTaken)) steps away from unlocking your favorite apps!")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
                             }
                         } else {
-                            Text("Set your exercise goal to begin your blocking session!")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
+                            Text("Select a mode and set a goal to start tracking your progress!")
                         }
                     } else {
                         Text("Please authorize HealthKit access to view progress.")
@@ -57,48 +58,35 @@ struct HomeScreen: View {
                     }
                 }
                 .padding()
-                //Active Blocked Apps Section
-                //                VStack(alignment: .leading) {
-                //                    Text("Blocked Apps")
-                //                        .font(.title2)
-                //                        .fontWeight(.bold)
-                //                    ScrollView(.horizontal, showsIndicators: false) {
-                //                        HStack(spacing: 15) {
-                //                            ForEach(1..<5) { index in
-                //                                BlockedAppCard(appName: "App \(index)", progress: 0.75)
-                //                            }
-                //                        }
-                //                    }
-                //                }
-                //                .padding(.horizontal)
-                
-                Button(action: {
-                    isModePopupVisible = true
-                }) {
-                    Text("SELECT MODE")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 4)
+                if (modes.first(where: {$0.isActive == true }) == nil) {
+                    Button(action: {
+                        isModePopupVisible = true
+                    }) {
+                        Text("SELECT MODE")
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.white)
+                            .cornerRadius(25)
+                            .shadow(radius: 4)
+                    }
+                    .padding(.horizontal, 30)
+                    
+                    Button(action: {
+                        isExercisePopupVisible = true
+                    }) {
+                        Text("SET GOALS")
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.white)
+                            .cornerRadius(25)
+                            .shadow(radius: 4)
+                    }
+                    .padding(.horizontal, 30)
                 }
-                .padding(.horizontal, 30)
                 
-                Button(action: {
-                    isExercisePopupVisible = true
-                }) {
-                    Text("SET GOALS")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 4)
-                }
-                .padding(.horizontal, 30)
-                
-                TimerSettingView(isPresented: .constant(true))
+                TimerSettingView(isPresented: .constant(true), stepsTaken: $stepsTaken, exerciseMinutes: $exerciseMinutes)
                     .environmentObject(model)
                 
                 // Display current block state
@@ -107,7 +95,7 @@ struct HomeScreen: View {
                         .foregroundColor(currentState.isActive ? .red : .green)
                 }
                 
-                // Fitness Challenges Section
+                //                 Fitness Challenges Section
                 //                VStack(alignment: .leading) {
                 //                    Text("Fitness Challenges")
                 //                        .font(.title2)
@@ -132,7 +120,18 @@ struct HomeScreen: View {
                 //                }
                 //                .padding(.horizontal)
             }
-            .onAppear(perform: fetchHealthData)
+            .onAppear {
+                fetchHealthData()
+                HealthKitManager.shared.startObservingHealthData { steps in
+                    DispatchQueue.main.async {
+                        self.stepsTaken = steps
+                    }
+                } exerciseHandler: { minutes in
+                    DispatchQueue.main.async {
+                        self.exerciseMinutes = minutes
+                    }
+                }
+            }
             .popover(isPresented: $isModePopupVisible) {
                 ModePopupView()
             }
@@ -170,16 +169,16 @@ struct TimerSettingView: View {
     @EnvironmentObject var model: MyModel
     @Environment(\.modelContext) private var modelContext
     @Query private var modes: [BlockModel]
-    
-    //    var onBlock: () -> Void
-    //    var onUnblock: () -> Void
+    @Query private var goals: [ExerciseModel]
+    @State private var showAlert = false
+    @Binding var stepsTaken: Double
+    @Binding var exerciseMinutes: Double
     
     var body: some View {
         VStack {
             // Block Apps Button
             Button(action: {
                 model.setShieldRestrictions()
-                // Set active block to true
                 if let activeMode = modes.first(where: { $0.isSelected }) {
                     activeMode.isActive = true
                     try? modelContext.save()
@@ -197,12 +196,15 @@ struct TimerSettingView: View {
             
             // Unblock Apps Button
             Button(action: {
-                model.resetDiscouragedItems()
-                // Set all blocks to inactive
-                for mode in modes {
-                    mode.isActive = false
+                if areGoalsMet() {
+                    model.resetDiscouragedItems()
+                    for mode in modes {
+                        mode.isActive = false
+                    }
+                    try? modelContext.save()
+                } else {
+                    showAlert = true
                 }
-                try? modelContext.save()
             }) {
                 Text("Unblock Apps")
                     .font(.headline)
@@ -213,7 +215,27 @@ struct TimerSettingView: View {
                     .cornerRadius(15)
             }
             .padding(.horizontal)
+            .alert("Goals Not Met", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("You need to complete your fitness goals before unblocking apps.")
+            }
         }
+    }
+    func areGoalsMet() -> Bool {
+        for goal in goals {
+            switch goal.exerciseType {
+            case .steps:
+                if stepsTaken < Double(goal.value) {
+                    return false
+                }
+            case .minutes:
+                if exerciseMinutes < Double(goal.value) {
+                    return false
+                }
+            }
+        }
+        return true
     }
 }
 
@@ -234,28 +256,6 @@ struct ProgressCard: View {
             }
             ProgressView(value: current, total: goal)
                 .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
-    }
-}
-
-struct BlockedAppCard: View {
-    var appName: String
-    var progress: Double
-    
-    var body: some View {
-        VStack {
-            Circle()
-                .frame(width: 60, height: 60)
-                .foregroundColor(.blue)
-                .overlay(Text("A").font(.title).foregroundColor(.white))
-            Text(appName)
-                .font(.subheadline)
-            ProgressView(value: progress)
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                .frame(width: 100)
         }
         .padding()
         .background(Color(.systemGray6))
@@ -302,11 +302,11 @@ struct QuickActionButton: View {
     }
 }
 
-struct HomeScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeScreen()
-            .environmentObject(MyModel())
-            .modelContainer(for: BlockModel.self, inMemory: true)
-            .modelContainer(for: ExerciseModel.self, inMemory: true)
-    }
+#Preview {
+    let preview = Preview()
+    preview.addBlockExamples(BlockModel.sampleItems)
+    preview.addExerciseExamples(ExerciseModel.sampleItems)
+    return ContentView()
+        .environmentObject(MyModel())
+        .modelContainer(preview.modelContainer)
 }

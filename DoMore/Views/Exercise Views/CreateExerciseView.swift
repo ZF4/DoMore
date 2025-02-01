@@ -31,30 +31,19 @@ struct CreateExerciseView: View {
         VStack(spacing: 20) {
             // Activity Type Selection
             VStack(alignment: .leading, spacing: 15) {
-                Text("ACTIVITY TYPE")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-                
                 HStack {
-                    // Steps Button
-                    ActivityTypeButton(
-                        title: "Steps",
-                        isSelected: selectedActivity == .steps
-                    ) {
-                        selectedActivity = .steps
-                    }
+                    //MARK: Add photos for different activity types
+                    Text("ACTIVITY TYPE  -")
+                        .font(.system(size: 15, weight: .semibold))
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                        .padding(.leading)
                     
-                    // Minutes Button
-                    ActivityTypeButton(
-                        title: "Minutes",
-                        isSelected: selectedActivity == .minutes
-                    ) {
-                        selectedActivity = .minutes
-                    }
+                    Text(selectedActivity.rawValue.uppercased())
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.gray)
                 }
-                .padding(.horizontal)
+
                 
                 if selectedActivity == .steps {
                     Text("Your Screen Time will not be restored until you have met the step goal.")
@@ -119,11 +108,11 @@ struct CreateExerciseView: View {
             }
         }
         .toolbar {
-            if showDelete {
-                ToolbarItem(placement: .topBarTrailing) {
-                    deleteButton
-                }
-            }
+//            if showDelete {
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    deleteButton
+//                }
+//            }
             
             ToolbarItem(placement: .topBarLeading) {
                 dismissButton
@@ -141,15 +130,15 @@ struct CreateExerciseView: View {
         }
     }
     
-    private var deleteButton: some View {
-        Button {
-            deleteGoal(goalID!)
-        } label: {
-            Image(systemName: "trash")
-                .bold()
-        }
-        .tint(.gray)
-    }
+//    private var deleteButton: some View {
+//        Button {
+//            deleteGoal(goalID!)
+//        } label: {
+//            Image(systemName: "trash")
+//                .bold()
+//        }
+//        .tint(.gray)
+//    }
     
     private var dismissButton: some View {
         Button {
@@ -161,21 +150,21 @@ struct CreateExerciseView: View {
         .tint(.gray)
     }
     
-    private func deleteGoal(_ goalToDelete: UUID) {
-        // Find and delete the mode with matching name
-        if let modeToRemove = try? modelContext.fetch(FetchDescriptor<ExerciseModel>())
-            .first(where: { $0.id == goalToDelete }) {
-            modelContext.delete(modeToRemove)
-        }
-    }
+//    private func deleteGoal(_ goalToDelete: UUID) {
+//        // Find and delete the mode with matching name
+//        if let modeToRemove = try? modelContext.fetch(FetchDescriptor<ExerciseModel>())
+//            .first(where: { $0.id == goalToDelete }) {
+//            modelContext.delete(modeToRemove)
+//        }
+//    }
     
-    private func setActivity() {
-        if selectedActivity == .steps {
-            exerciseModel = ExerciseModel(title: "Steps", exerciseType: .steps, value: Int(inputValue) ?? 0)
-        } else if selectedActivity == .minutes {
-            exerciseModel = ExerciseModel(title: "Minutes", exerciseType: .minutes, value: Int(inputValue) ?? 0)
-        }
-    }
+//    private func setActivity() {
+//        if selectedActivity == .steps {
+//            exerciseModel = ExerciseModel(title: "Steps", exerciseType: .steps, value: Int(inputValue) ?? 0)
+//        } else if selectedActivity == .minutes {
+//            exerciseModel = ExerciseModel(title: "Minutes", exerciseType: .minutes, value: Int(inputValue) ?? 0)
+//        }
+//    }
     
     private func saveActivity() {
         guard let value = Int(inputValue), value > 0 else {
@@ -184,10 +173,9 @@ struct CreateExerciseView: View {
         }
         
         errorMessage = nil // Clear previous errors
-        setActivity() // Set the exercise model before saving
-        
-        if let model = exerciseModel {
-            modelContext.insert(model)
+//        setActivity() // Set the exercise model before saving
+        if let currentGoal {
+            currentGoal.value = Int(inputValue) ?? 0
             dismiss() // Dismiss after saving
         }
     }
