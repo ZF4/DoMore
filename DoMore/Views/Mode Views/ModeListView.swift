@@ -38,7 +38,7 @@ struct ModeList: View {
             selection.categoryTokens = (try? JSONDecoder().decode(Set<ActivityCategoryToken>.self, from: categoryTokensData)) ?? []
         }
         MyModel.shared.selectionToDiscourage = selection
-        MyModel.shared.setShieldRestrictions()
+//        MyModel.shared.setShieldRestrictions()
     }
     
     var body: some View {
