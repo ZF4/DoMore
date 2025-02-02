@@ -16,6 +16,7 @@ struct HomeScreen: View {
     @Query private var modes: [BlockModel]
     @Query private var goals: [ExerciseModel]
     @State private var stepsTaken: Double = 0.0
+    @State private var distanceTraveled: Double = 0.0
     @State private var stepsGoal: Double = 5000
     @State private var exerciseMinutes: Double = 0.0
     @State private var exerciseGoal: Double = 30
@@ -32,25 +33,31 @@ struct HomeScreen: View {
                     Text("Daily Progress")
                         .font(.title)
                         .fontWeight(.bold)
+                    
                     if isAuthorized {
-                        if !modes.isEmpty {
-                            ForEach(goals) { goal in
-                                if goal.isSelected {
-                                    if goal.exerciseType == .steps {
-                                        ProgressCard(title: goal.title, current: stepsTaken, goal: Double(goal.value), unit: goal.title.lowercased())
-                                    } else if goal.exerciseType == .minutes {
-                                        ProgressCard(title: goal.title, current: exerciseMinutes, goal: Double(goal.value), unit: goal.title.lowercased())
+                        ForEach(goals) { goal in
+                            if goal.isSelected {
+                                if goal.exerciseType == .steps {
+                                    HStack {
+                                        Spacer()
+                                        ProgressRing(current: stepsTaken, goal: Double(goal.value), type: .steps)
+                                        Spacer()
                                     }
-                                    
-                                    Text("You're just \(Int(stepsGoal) - Int(stepsTaken)) steps away from unlocking your favorite apps!")
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
+                                } else if goal.exerciseType == .minutes {
+                                    HStack {
+                                        Spacer()
+                                        ProgressRing(current: exerciseMinutes, goal: Double(goal.value), type: .minutes)
+                                        Spacer()
+                                    }
                                 }
                                 
+                                Text("You're just \(Int(stepsGoal) - Int(stepsTaken)) steps away from unlocking your favorite apps!")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
                             }
-                        } else {
-                            Text("Select a mode and set a goal to start tracking your progress!")
+                            
                         }
+                        
                     } else {
                         Text("Please authorize HealthKit access to view progress.")
                             .foregroundColor(.gray)
@@ -130,6 +137,10 @@ struct HomeScreen: View {
                     DispatchQueue.main.async {
                         self.exerciseMinutes = minutes
                     }
+                } distanceHandler: { distance in
+                    DispatchQueue.main.async {
+                        self.distanceTraveled = distance
+                    }
                 }
             }
             .popover(isPresented: $isModePopupVisible) {
@@ -140,6 +151,7 @@ struct HomeScreen: View {
             }
         }
     }
+    
     private func fetchHealthData() {
         HealthKitManager.shared.requestAuthorization { success, error in
             if success {
@@ -239,68 +251,68 @@ struct TimerSettingView: View {
     }
 }
 
-struct ProgressCard: View {
-    var title: String
-    var current: Double
-    var goal: Double
-    var unit: String
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(title)
-                    .font(.headline)
-                Spacer()
-                Text("\(Int(current))/\(Int(goal)) \(unit)")
-                    .font(.subheadline)
-            }
-            ProgressView(value: current, total: goal)
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
-    }
-}
-
-struct ChallengeCard: View {
-    var title: String
-    var details: String
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.headline)
-                Text(details)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
-    }
-}
-
-struct QuickActionButton: View {
-    var title: String
-    var icon: String
-    
-    var body: some View {
-        VStack {
-            Image(systemName: icon)
-                .font(.title2)
-                .padding()
-                .background(Color.blue)
-                .clipShape(Circle())
-                .foregroundColor(.white)
-            Text(title)
-                .font(.caption)
-        }
-    }
-}
+//struct ProgressCard: View {
+//    var title: String
+//    var current: Double
+//    var goal: Double
+//    var unit: String
+//    
+//    var body: some View {
+//        VStack(alignment: .leading) {
+//            HStack {
+//                Text(title)
+//                    .font(.headline)
+//                Spacer()
+//                Text("\(Int(current))/\(Int(goal)) \(unit)")
+//                    .font(.subheadline)
+//            }
+//            ProgressView(value: current, total: goal)
+//                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+//        }
+//        .padding()
+//        .background(Color(.systemGray6))
+//        .cornerRadius(10)
+//    }
+//}
+//
+//struct ChallengeCard: View {
+//    var title: String
+//    var details: String
+//    
+//    var body: some View {
+//        HStack {
+//            VStack(alignment: .leading) {
+//                Text(title)
+//                    .font(.headline)
+//                Text(details)
+//                    .font(.subheadline)
+//                    .foregroundColor(.gray)
+//            }
+//            Spacer()
+//        }
+//        .padding()
+//        .background(Color(.systemGray6))
+//        .cornerRadius(10)
+//    }
+//}
+//
+//struct QuickActionButton: View {
+//    var title: String
+//    var icon: String
+//    
+//    var body: some View {
+//        VStack {
+//            Image(systemName: icon)
+//                .font(.title2)
+//                .padding()
+//                .background(Color.blue)
+//                .clipShape(Circle())
+//                .foregroundColor(.white)
+//            Text(title)
+//                .font(.caption)
+//        }
+//    }
+//}
 
 #Preview {
     let preview = Preview()
