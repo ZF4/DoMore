@@ -32,7 +32,7 @@ struct ModePopupView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("SELECT MODE")
+            .navigationTitle("MODES")
             .popover(isPresented: $showingPopover) {
                 CreateModeView(currentMode: .constant(nil))
             }

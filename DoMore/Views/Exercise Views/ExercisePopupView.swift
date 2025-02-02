@@ -20,19 +20,19 @@ struct ExercisePopupView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-//                        unselectModes()
-                        showingPopover = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .bold()
-                    }
-                    .tint(.gray)
-                }
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    Button {
+////                        unselectModes()
+//                        showingPopover = true
+//                    } label: {
+//                        Image(systemName: "plus")
+//                            .bold()
+//                    }
+//                    .tint(.gray)
+//                }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("SELECT GOAL")
+            .navigationTitle("GOALS")
             .popover(isPresented: $showingPopover) {
                 CreateExerciseView(currentGoal: .constant(nil))
             }
