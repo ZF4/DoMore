@@ -113,7 +113,8 @@ struct ModeCellView: View {
             selection.categoryTokens = (try? JSONDecoder().decode(Set<ActivityCategoryToken>.self, from: categoryTokensData)) ?? []
         }
         MyModel.shared.selectionToDiscourage = selection
-        MyModel.shared.setShieldRestrictions()
+        //MARK: THIS SHOULD STAY COMMENTED OUT FOR NOW.
+//        MyModel.shared.setShieldRestrictions()
     }
 }
 

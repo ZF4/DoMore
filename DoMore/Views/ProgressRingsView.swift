@@ -18,23 +18,9 @@ struct ProgressRing: View {
             return "Mins"
         }
     }
-//    var outerCurrent: Double?
-//    var outerGoal: Double?
 
     var body: some View {
         ZStack {
-            // Outer Circle Progress
-//            Circle()
-//                .stroke(Color.orange.opacity(0.3), lineWidth: 10)
-//                .frame(width: 180, height: 180)
-//            Circle()
-//                .trim(from: 0.0, to: CGFloat(min((outerCurrent ?? 0) / (outerGoal ?? 0), 1.0)))
-//                .stroke(Color.orange, style: StrokeStyle(lineWidth: 10, lineCap: .round))
-//                .rotationEffect(.degrees(-90))
-//                .animation(.easeOut, value: outerCurrent)
-//                .frame(width: 180, height: 180)
-                
-            // Inner Circle Progress (Steps)
             Circle()
                 .stroke(Color.gray.opacity(0.3), lineWidth: 20)
                 .frame(width: 300)
@@ -63,8 +49,6 @@ struct ProgressRing: View {
                 
                 Text("Goal: \(Int(goal ?? 0))")
                     .font(.system(size: 15, weight: .light, design: .monospaced))
-//                Text("\(Int(outerCurrent ?? 0)) Mins")
-//                    .font(.subheadline)
             }
         }
     }

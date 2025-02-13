@@ -52,16 +52,6 @@ struct Root: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        Task {
-            do {
-                try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-            } catch {
-                print("Error for Family Controls: \(error)")
-            }
-        }
-       
-       // MySchedule.setSchedule()
-        
         return true
     }
 }

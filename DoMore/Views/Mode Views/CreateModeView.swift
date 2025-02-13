@@ -178,6 +178,7 @@ struct CreateModeView: View {
     
     private func addMode(title: String, selection: FamilyActivitySelection) {
         if let currentMode {
+            print("Is current mode selected")
             currentMode.title = modeTitle
             currentMode.applicationTokens = try? JSONEncoder().encode(selection.applicationTokens)
             currentMode.categoryTokens = try? JSONEncoder().encode(selection.categoryTokens)
