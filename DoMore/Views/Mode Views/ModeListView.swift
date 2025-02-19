@@ -14,6 +14,7 @@ struct ModeList: View {
     @Environment(\.modelContext) private var context
     @Query private var modes: [BlockModel]
     @State private var selectedModeId: UUID?
+    @Environment(\.dismiss) private var dismiss // Applies to DetailView.
     
     private func setSelectMode(_ selectedMode: BlockModel) {
         // Deactivate all other modes
@@ -21,6 +22,7 @@ struct ModeList: View {
             mode.isSelected = mode.id == selectedMode.id
             print("Active: \(mode.isActive)")
             print("Selected: \(mode.isSelected)")
+            dismiss()
         }
         
         // Activate the selected mode's restrictions

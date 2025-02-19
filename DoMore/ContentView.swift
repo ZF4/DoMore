@@ -26,11 +26,14 @@ struct ContentView: View {
                     Label("Stats", systemImage: "chart.bar.fill")
                 }
             
-            Text("Settings View")
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
+            NavigationView {
+                SettingsView()
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gear")
+            }
         }
+        .tint(.black)
     }
 }
 

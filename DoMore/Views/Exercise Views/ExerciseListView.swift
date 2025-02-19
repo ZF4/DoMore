@@ -14,13 +14,15 @@ struct ExerciseListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var goals: [ExerciseModel]
     @State private var selectedModeId: UUID?
+    @Environment(\.dismiss) private var dismiss // Applies to DetailView.
     
     private func setSelectMode(_ selectedGoal: ExerciseModel) {
         // Deactivate all other modes
         for goal in goals {
             goal.isSelected = goal.id == selectedGoal.id
             print("Active: \(goal.isActive)")
-            print("Selected: \(goal.isSelected)") 
+            print("Selected: \(goal.isSelected)")
+            dismiss()
         }
         
         // Activate the selected mode's restrictions
