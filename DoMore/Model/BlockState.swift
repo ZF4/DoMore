@@ -16,11 +16,13 @@ final class BlockModel {
     var isSelected: Bool = false
     var applicationTokens: Data?
     var categoryTokens: Data?
+    var isLocked: Bool?
 
-    init(title: String, applicationTokens: Data? = nil, categoryTokens: Data? = nil) {
+    init(title: String, applicationTokens: Data? = nil, categoryTokens: Data? = nil, isLocked: Bool? = false) {
         self.id = UUID()
         self.title = title
         self.applicationTokens = applicationTokens
         self.categoryTokens = categoryTokens
+        self.isLocked = isLocked
     }
 }

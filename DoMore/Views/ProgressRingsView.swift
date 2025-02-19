@@ -41,14 +41,16 @@ struct ProgressRing: View {
             // Progress Labels
             VStack {
                 Text("\(Int(current ?? 0)) \(text)")
-                    .font(.system(size: 20, weight: .medium, design: .monospaced))
+                    .font(.custom("ShareTechMono-Regular", size: 22))
+//                    .font(.system(size: 20, weight: .medium, design: .monospaced))
                     .padding(.top)
                 
                 Divider()
                     .frame(width: 50)
                 
                 Text("Goal: \(Int(goal ?? 0))")
-                    .font(.system(size: 15, weight: .light, design: .monospaced))
+                    .font(.custom("ShareTechMono-Regular", size: 16))
+//                    .font(.system(size: 15, weight: .light, design: .monospaced))
             }
         }
     }

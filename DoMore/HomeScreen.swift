@@ -17,9 +17,7 @@ struct HomeScreen: View {
     @Query private var goals: [ExerciseModel]
     @State private var stepsTaken: Double = 0.0
     @State private var distanceTraveled: Double = 0.0
-    @State private var stepsGoal: Double = 5000
     @State private var exerciseMinutes: Double = 0.0
-    @State private var exerciseGoal: Double = 30
     @State private var isAuthorized: Bool = true
     @State private var isHealthKitAuthorized: Bool = UserDefaults.standard.bool(forKey: "isHKAuthorized")
     @State private var isFamilyAuthorized: Bool = UserDefaults.standard.bool(forKey: "isFamilyAuthorized")
@@ -29,105 +27,20 @@ struct HomeScreen: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack {
                 // Header Section
-                VStack(alignment: .leading) {
-                    
-                    Text("SET THE GOALS")
-                        .font(.system(size: 50, weight: .heavy, design: .monospaced))
-
-                    Text("DO THE WORK")
-                        .font(.system(size: 50, weight: .heavy, design: .monospaced))
-
-                    //MARK: Remove isGoalSet for prod
-                    if isHealthKitAuthorized {
-                        ForEach(goals) { goal in
-                            if goal.isSelected {
-                                if goal.exerciseType == .steps {
-                                    VStack {
-                                        HStack {
-                                            Spacer()
-                                            ProgressRing(current: stepsTaken, goal: Double(goal.value), type: .steps)
-                                            Spacer()
-                                            
-                                        }
-                                        .padding(.bottom, 10)
-                                        
-                                        Text("You're just \(Int(goal.value) - Int(stepsTaken)) steps away from completing your goal!")
-                                            .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                                            .foregroundColor(.gray)
-                                    }
-                                } else if goal.exerciseType == .minutes {
-                                    VStack {
-                                        HStack {
-                                            Spacer()
-                                            ProgressRing(current: exerciseMinutes, goal: Double(goal.value), type: .minutes)
-                                            Spacer()
-                                            
-                                        }
-                                        .padding(.bottom, 10)
-                                        
-                                        Text("You're just \(Int(goal.value) - Int(exerciseMinutes)) minutes away from completing your goal!")
-                                            .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                                            .foregroundColor(.gray)
-                                    }
-                                }
-                            }
-                            
-                        }
-                        
-                    } else {
-                        Text("We need your permission to access your health and screen time data. Your data will always remain private.")
-                            .font(.system(size: 14, weight: .regular, design: .monospaced))
-                            .padding(.top)
-                        
-                        Button(action: authorize) {
-                            Text("Authorize")
-                                .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                                .padding(50)
-                                .frame(maxWidth: .infinity)
-                                .background(Color.black)
-                                .foregroundColor(.white)
-                                .cornerRadius(20)
-                                .shadow(radius: 4)
-                        }
-                    }
-                }
-                .padding()
+                headerSection
                 
                 if (modes.first(where: {$0.isActive == true }) == nil) {
                     //MARK: Remove isAuthorized for prod
                     if (isHealthKitAuthorized && isFamilyAuthorized) || isAuthorized {
-                        Button(action: {
-                            isModePopupVisible = true
-                        }) {
-                            Text("SELECT MODE")
-                                .font(.headline)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.white)
-                                .cornerRadius(25)
-                                .shadow(radius: 4)
-                        }
-                        .padding(.horizontal, 30)
-                        
-                        Button(action: {
-                            isExercisePopupVisible = true
-                        }) {
-                            Text("SET GOALS")
-                                .font(.headline)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.white)
-                                .cornerRadius(25)
-                                .shadow(radius: 4)
-                        }
-                        .padding(.horizontal, 30)
+                        modeSelectionButtons
                     }
                 }
+                if (modes.first(where: {$0.isSelected == true }) != nil) && (goals.first(where: {$0.isSelected == true }) != nil) {
                     TimerSettingView(isPresented: .constant(true), stepsTaken: $stepsTaken, exerciseMinutes: $exerciseMinutes)
                         .environmentObject(model)
-                
+                }
             }
             .onAppear {
                 fetchHealthData()
@@ -153,6 +66,118 @@ struct HomeScreen: View {
             }
         }
     }
+    
+    private var headerSection: some View {
+        VStack(alignment: .leading) {
+            Text("SET THE G0ALS")
+                .font(.custom("ShareTechMono-Regular", size: 50))
+//                .font(.system(size: 50, weight: .heavy, design: .monospaced))
+            
+            Text("D0 THE W0RK")
+                .font(.custom("ShareTechMono-Regular", size: 50))
+//                .font(.system(size: 50, weight: .heavy, design: .monospaced))
+            
+            if isHealthKitAuthorized {
+                goalDisplay
+            } else {
+                authorizationRequest
+            }
+        }
+        .padding()
+    }
+    
+    private var goalDisplay: some View {
+        ForEach(goals) { goal in
+            if goal.isSelected {
+                if goal.exerciseType == .steps {
+                    stepsGoalView(goal: goal)
+                } else if goal.exerciseType == .minutes {
+                    minutesGoalView(goal: goal)
+                }
+            }
+        }
+    }
+    
+    private func stepsGoalView(goal: ExerciseModel) -> some View {
+        VStack {
+            HStack {
+                Spacer()
+                ProgressRing(current: stepsTaken, goal: Double(goal.value), type: .steps)
+                Spacer()
+            }
+            .padding(.bottom, 10)
+            
+            Text("You're just \(Int(goal.value) - Int(stepsTaken)) steps away from completing your goal!")
+                .font(.custom("ShareTechMono-Regular", size: 17))
+                .foregroundColor(.gray)
+        }
+    }
+    
+    private func minutesGoalView(goal: ExerciseModel) -> some View {
+        VStack {
+            HStack {
+                Spacer()
+                ProgressRing(current: exerciseMinutes, goal: Double(goal.value), type: .minutes)
+                Spacer()
+            }
+            .padding(.bottom, 10)
+            
+            Text("You're just \(Int(goal.value) - Int(exerciseMinutes)) minutes away from completing your goal!")
+                .font(.custom("ShareTechMono-Regular", size: 17))
+                .foregroundColor(.gray)
+        }
+    }
+    
+    private var authorizationRequest: some View {
+        VStack {
+            Text("We need your permission to access your health and screen time data. Your data will always remain private.")
+                .font(.custom("ShareTechMono-Regular", size: 18))
+                .padding(.top)
+            
+            Button(action: authorize) {
+                Text("Authorize")
+                    .font(.custom("ShareTechMono-Regular", size: 18))
+                    .padding(50)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.black)
+                    .foregroundColor(.white)
+                    .cornerRadius(20)
+                    .shadow(radius: 4)
+            }
+        }
+    }
+    
+    private var modeSelectionButtons: some View {
+        VStack {
+            Button(action: {
+                isModePopupVisible = true
+            }) {
+                Text("SELECT MODE")
+                    .font(.custom("VT323-Regular", size: 18))
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 4)
+            }
+            .padding(.horizontal)
+            
+            Button(action: {
+                isExercisePopupVisible = true
+            }) {
+                Text("SET GOALS")
+                    .font(.custom("VT323-Regular", size: 18))
+//                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 4)
+            }
+            .padding(.horizontal)
+        }
+    }
+    
     private func authorize() {
         HealthKitManager.shared.requestAuthorization { success, error in
             if success {
@@ -208,61 +233,63 @@ struct TimerSettingView: View {
     
     var body: some View {
         VStack {
-            // Block Apps Button
-            Button(action: {
-                model.setShieldRestrictions()
-                if let activeMode = modes.first(where: { $0.isSelected }) {
-                    activeMode.isActive = true
-                    try? modelContext.save()
-                }
-            }) {
-                Text("Block Apps")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(8)
-                    .background(Color.red)
-                    .cornerRadius(15)
-            }
-            .padding(.horizontal)
-            
-            // Unblock Apps Button
-            Button(action: {
-                if areGoalsMet() {
-                    model.resetDiscouragedItems()
-                    for mode in modes {
-                        mode.isActive = false
+            if (modes.first(where: {$0.isLocked == true }) == nil) {
+                LockButton {
+                    Task {
+                        await setLock()
                     }
-                    try? modelContext.save()
-                } else {
-                    showAlert = true
                 }
-            }) {
-                Text("Unblock Apps")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(8)
-                    .background(Color.green)
-                    .cornerRadius(15)
-            }
-            .padding(.horizontal)
-            .alert("Goals Not Met", isPresented: $showAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text("You need to complete your fitness goals before unblocking apps.")
+            } else {
+                UnlockButton {
+                    Task {
+                        await setUnlock()
+                    }
+                }
+                .alert("Goals Not Met", isPresented: $showAlert) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text("You need to complete your fitness goals before unblocking apps.")
+                }
             }
         }
     }
+    
+    func setLock() async {
+        model.setShieldRestrictions()
+        if let activeMode = modes.first(where: { $0.isSelected }) {
+            activeMode.isActive = true
+            activeMode.isLocked = true
+            print("Lock set")
+            try? modelContext.save()
+        }
+    }
+    
+    func setUnlock() async {
+        if areGoalsMet() {
+            model.resetDiscouragedItems()
+            if let activeMode = modes.first(where: { $0.isSelected }) {
+                activeMode.isActive = false
+                activeMode.isLocked = false
+                print("Unlock set")
+            }
+            try? modelContext.save()
+        } else {
+            showAlert = true
+        }
+    }
+    
     func areGoalsMet() -> Bool {
-        for goal in goals {
+        //The issue is here
+        if let goal = goals.first(where: { $0.isSelected }) {
             switch goal.exerciseType {
             case .steps:
                 if stepsTaken < Double(goal.value) {
+                    print("GOAL NOT MET STEPS")
                     return false
                 }
             case .minutes:
                 if exerciseMinutes < Double(goal.value) {
+                    print("GOAL NOT MET MINS")
                     return false
                 }
             }
