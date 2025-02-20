@@ -23,7 +23,6 @@ class MyModel: ObservableObject {
     }
     
     func setShieldRestrictions() {
-        print("*******SHIELD IS SET********")
         store.shield.applications = selectionToDiscourage.applicationTokens.isEmpty ? nil : selectionToDiscourage.applicationTokens
         store.shield.applicationCategories = selectionToDiscourage.categoryTokens.isEmpty ? nil : ShieldSettings.ActivityCategoryPolicy.specific(selectionToDiscourage.categoryTokens)
         blockState?.isActive = true
@@ -33,5 +32,5 @@ class MyModel: ObservableObject {
         selectionToDiscourage = FamilyActivitySelection()
         setShieldRestrictions() // Apply the changes immediately
         blockState?.isActive = false
-        }
+    }
 }

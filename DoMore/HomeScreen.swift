@@ -71,11 +71,9 @@ struct HomeScreen: View {
         VStack(alignment: .leading) {
             Text("SET THE G0ALS")
                 .font(.custom("ShareTechMono-Regular", size: 50))
-//                .font(.system(size: 50, weight: .heavy, design: .monospaced))
             
             Text("D0 THE W0RK")
                 .font(.custom("ShareTechMono-Regular", size: 50))
-//                .font(.system(size: 50, weight: .heavy, design: .monospaced))
             
             if isHealthKitAuthorized {
                 goalDisplay
@@ -109,7 +107,6 @@ struct HomeScreen: View {
             
             Text("You're just \(Int(goal.value) - Int(stepsTaken)) steps away from completing your goal!")
                 .font(.custom("ShareTechMono-Regular", size: 17))
-                .foregroundColor(.gray)
         }
     }
     
@@ -124,7 +121,6 @@ struct HomeScreen: View {
             
             Text("You're just \(Int(goal.value) - Int(exerciseMinutes)) minutes away from completing your goal!")
                 .font(.custom("ShareTechMono-Regular", size: 17))
-                .foregroundColor(.gray)
         }
     }
     
@@ -237,12 +233,14 @@ struct TimerSettingView: View {
                 LockButton {
                     Task {
                         await setLock()
+                        BlockTimeTracker.shared.startTracking() // When blocking starts
                     }
                 }
             } else {
                 UnlockButton {
                     Task {
                         await setUnlock()
+                        BlockTimeTracker.shared.stopTracking() // When blocking starts
                     }
                 }
                 .alert("Goals Not Met", isPresented: $showAlert) {

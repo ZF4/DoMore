@@ -21,10 +21,12 @@ struct ContentView: View {
             }
             
             // Additional tab views
-            Text("Stats View")
-                .tabItem {
-                    Label("Stats", systemImage: "chart.bar.fill")
-                }
+            NavigationView {
+                StatsView()
+            }
+            .tabItem {
+                Label("Stats", systemImage: "chart.bar.fill")
+            }
             
             NavigationView {
                 SettingsView()

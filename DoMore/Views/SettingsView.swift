@@ -13,22 +13,41 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var modes: [BlockModel]
     var body: some View {
-        Button(action: {
-            model.resetDiscouragedItems()
-            for mode in modes {
-                mode.isActive = false
-                mode.isLocked = false
+        VStack {
+            Button(action: {
+                model.resetDiscouragedItems()
+                for mode in modes {
+                    mode.isActive = false
+                    mode.isLocked = false
+                }
+            }) {
+                Text("HARD RESET")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(8)
+                    .background(Color.green)
+                    .cornerRadius(15)
             }
-        }) {
-            Text("HARD RESET")
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(8)
-                .background(Color.green)
-                .cornerRadius(15)
+            .padding(.horizontal)
+            
+            Button(action: {
+                BlockTimeTracker.shared.resetBlockedTime()
+                for mode in modes {
+                    mode.isActive = false
+                    mode.isLocked = false
+                }
+            }) {
+                Text("RESET BLOCK TIME")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(8)
+                    .background(Color.green)
+                    .cornerRadius(15)
+            }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 }
 

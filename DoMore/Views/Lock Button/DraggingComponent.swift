@@ -70,7 +70,7 @@ public struct DraggingComponent: View {
         Image(systemName: name)
             .font(.system(size: 20, weight: .regular, design: .rounded))
             .foregroundColor(Color.black)
-            .frame(width: 42, height: 50)
+            .frame(width: 42, height: 45)
             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
             .padding(4)
             .opacity(isShown ? 1 : 0)
