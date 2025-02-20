@@ -20,7 +20,7 @@ public struct LockButton: View {
                     DraggingComponent(isUnlocked: $isUnlocked, isLoading: isLoading, maxWidth: geometry.size.width)
                 }
             }
-            .frame(height: 60)
+            .frame(height: 55)
             .padding(.horizontal)
             .padding(.bottom, 20)
             .onChange(of: isUnlocked) { newValue, oldValue in
