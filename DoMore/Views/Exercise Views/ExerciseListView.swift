@@ -65,7 +65,7 @@ struct ExerciseCellView: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding(25)
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.white)
             
             // Right-aligned button
             HStack {
@@ -78,13 +78,12 @@ struct ExerciseCellView: View {
                     Image(systemName: "pencil")
                         .font(.system(size: 20))
                         .bold()
-                        .foregroundColor(.gray)
                 }
                 .padding(.trailing)
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(Color.gray.opacity(0.6))
         .cornerRadius(12)
         .shadow(radius: goal.isSelected ? 6 : 1)
         .padding(.horizontal, 30)
@@ -115,3 +114,6 @@ struct ExerciseCellView: View {
     return ExerciseListView()
         .modelContainer(container)
 }
+
+
+

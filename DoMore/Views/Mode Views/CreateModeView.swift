@@ -38,7 +38,6 @@ struct CreateModeView: View {
         }
         .padding(.top)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
         .edgesIgnoringSafeArea(.bottom)
         .toolbar {
             if showDelete {
@@ -78,6 +77,7 @@ struct CreateModeView: View {
             TextField("Mode name", text: $modeTitle)
                 .font(.body)
                 .padding()
+                .foregroundStyle(Color.white)
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(8)
         }
@@ -105,6 +105,7 @@ struct CreateModeView: View {
             }
             .padding()
             .background(Color.gray.opacity(0.2))
+//            .background(Color.gray)
             .cornerRadius(8)
         }
         .familyActivityPicker(isPresented: $isDiscouragedPresented, selection: $model.selectionToDiscourage)
@@ -115,11 +116,11 @@ struct CreateModeView: View {
             Text("\(model.selectionToDiscourage.applicationTokens.count)  Apps Selected")
                 .font(.body)
                 .bold()
-                .foregroundStyle(.gray)
+                .foregroundStyle(.white)
             Text("\(model.selectionToDiscourage.categoryTokens.count)  Categories Selected")
                 .font(.body)
                 .bold()
-                .foregroundStyle(.gray)
+                .foregroundStyle(.white)
         }
     }
     
@@ -127,7 +128,7 @@ struct CreateModeView: View {
         Image(systemName: "pencil")
             .font(.system(size: 20))
             .bold()
-            .foregroundColor(.gray)
+            .foregroundColor(.white)
     }
     
     private var doneButton: some View {
