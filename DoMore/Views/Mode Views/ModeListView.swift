@@ -73,7 +73,7 @@ struct ModeCellView: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding(25)
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.white)
             
             // Right-aligned button
             HStack {
@@ -86,13 +86,12 @@ struct ModeCellView: View {
                     Image(systemName: "pencil")
                         .font(.system(size: 20))
                         .bold()
-                        .foregroundColor(.gray)
                 }
                 .padding(.trailing)
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(Color.gray.opacity(0.6))
         .cornerRadius(12)
         .shadow(radius: mode.isSelected ? 6 : 1)
         .padding(.horizontal, 30)

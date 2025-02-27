@@ -128,8 +128,10 @@ struct StatsView: View {
     
     var allTimeFitnessView: some View {
         VStack(alignment: .leading) {
-            Text("ALL TIME")
-                .font(.custom("ShareTechMono-Regular", size: 20))
+            HStack {
+                Text("TOTAL WHILE USING APP")
+                    .font(.custom("ShareTechMono-Regular", size: 20))
+            }
             
             HStack {
                 VStack(alignment: .leading) {
@@ -157,3 +159,4 @@ struct StatsView: View {
 #Preview {
     StatsView()
 }
+

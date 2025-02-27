@@ -1,4 +1,3 @@
-//
 //  HomeScreen View.swift
 //  Limit
 //
@@ -152,7 +151,7 @@ struct HomeScreen: View {
                     .font(.custom("VT323-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    .background(Color.gray.opacity(0.6))
                     .cornerRadius(10)
                     .shadow(radius: 4)
             }
@@ -166,7 +165,7 @@ struct HomeScreen: View {
 //                    .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    .background(Color.gray.opacity(0.6))
                     .cornerRadius(10)
                     .shadow(radius: 4)
             }

@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct CreateExerciseView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss // To dismiss the view
     @State private var selectedActivity: ExerciseModel.ExerciseType = .steps // Track selected activity
@@ -71,7 +72,8 @@ struct CreateExerciseView: View {
                 TextField("e.g. 5000", text: $inputValue)
                     .keyboardType(.numberPad)
                     .padding()
-                    .background(Color.white)
+                    .background(Color.gray.opacity(0.2))
+                    .foregroundStyle(Color.white)
                     .cornerRadius(10)
                     .shadow(radius: 1)
                     .padding(.horizontal)
