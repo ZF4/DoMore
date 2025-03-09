@@ -5,6 +5,8 @@ import SwiftData
 import FamilyControls
 import ManagedSettings
 import ManagedSettingsUI
+import FirebaseSignInWithApple
+import FirebaseCore
 
 @main
 @MainActor
@@ -15,10 +17,11 @@ struct Root: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
                 .modelContainer(appContainer)
                 .environmentObject(model)
                 .environmentObject(store)
+                .configureFirebaseSignInWithAppleWith(firestoreUserCollectionPath: Path.FireStore.profiles)
         }
     }
     
@@ -47,11 +50,15 @@ struct Root: App {
             fatalError("Failed to create container")
         }
     }()
-
+    
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseConfiguration.shared.setLoggerLevel(.debug)
+        print("Configuring Firebase...")
+        FirebaseApp.configure()
+        print("Firebase configured successfully")
         return true
     }
 }

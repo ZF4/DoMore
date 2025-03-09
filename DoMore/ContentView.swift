@@ -10,9 +10,10 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.colorScheme) var colorScheme
     var body: some View {
         TabView {
-            // Existing main content wrapped in a NavigationView
+            //MARK: Home View
             NavigationView {
                 HomeScreen()
             }
@@ -20,7 +21,7 @@ struct ContentView: View {
                 Label("Home", systemImage: "house.fill")
             }
             
-            // Additional tab views
+            //MARK: Stat View
             NavigationView {
                 StatsView()
             }
@@ -28,6 +29,15 @@ struct ContentView: View {
                 Label("Stats", systemImage: "chart.bar.fill")
             }
             
+            //MARK: Community View
+            NavigationView {
+                LeaderboardList()
+            }
+            .tabItem {
+                Label("Community", systemImage: "person.2.fill")
+            }
+            
+            //MARK: Settings View
             NavigationView {
                 SettingsView()
             }
@@ -35,7 +45,7 @@ struct ContentView: View {
                 Label("Settings", systemImage: "gear")
             }
         }
-        .tint(.white)
+        .tint(colorScheme == .dark ? .white : .black)
     }
 }
 
