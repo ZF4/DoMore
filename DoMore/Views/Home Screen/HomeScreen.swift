@@ -8,6 +8,8 @@ import SwiftUI
 import SwiftData
 import FamilyControls
 import ManagedSettings
+import FirebaseFirestore
+import FirebaseAuth
 
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
@@ -25,44 +27,42 @@ struct HomeScreen: View {
     @State private var isExercisePopupVisible = false
     
     var body: some View {
-        ScrollView {
-            VStack {
-                // Header Section
-                headerSection
-                
-                if (modes.first(where: {$0.isActive == true }) == nil) {
-                    //MARK: Remove isAuthorized for prod
-                    if (isHealthKitAuthorized && isFamilyAuthorized) || isAuthorized {
-                        modeSelectionButtons
-                    }
-                }
-                if (modes.first(where: {$0.isSelected == true }) != nil) && (goals.first(where: {$0.isSelected == true }) != nil) {
-                    TimerSettingView(isPresented: .constant(true), stepsTaken: $stepsTaken, exerciseMinutes: $exerciseMinutes)
-                        .environmentObject(model)
+        VStack {
+            // Header Section
+            headerSection
+            
+            if (modes.first(where: {$0.isActive == true }) == nil) {
+                //MARK: Remove isAuthorized for prod
+                if (isHealthKitAuthorized && isFamilyAuthorized) || isAuthorized {
+                    modeSelectionButtons
                 }
             }
-            .onAppear {
-                fetchHealthData()
-                HealthKitManager.shared.startObservingHealthData { steps in
-                    DispatchQueue.main.async {
-                        self.stepsTaken = steps
-                    }
-                } exerciseHandler: { minutes in
-                    DispatchQueue.main.async {
-                        self.exerciseMinutes = minutes
-                    }
-                } distanceHandler: { distance in
-                    DispatchQueue.main.async {
-                        self.distanceTraveled = distance
-                    }
+            if (modes.first(where: {$0.isSelected == true }) != nil) && (goals.first(where: {$0.isSelected == true }) != nil) {
+                TimerSettingView(isPresented: .constant(true), stepsTaken: $stepsTaken, exerciseMinutes: $exerciseMinutes)
+                    .environmentObject(model)
+            }
+        }
+        .onAppear {
+            fetchHealthData()
+            HealthKitManager.shared.startObservingHealthData { steps in
+                DispatchQueue.main.async {
+                    self.stepsTaken = steps
+                }
+            } exerciseHandler: { minutes in
+                DispatchQueue.main.async {
+                    self.exerciseMinutes = minutes
+                }
+            } distanceHandler: { distance in
+                DispatchQueue.main.async {
+                    self.distanceTraveled = distance
                 }
             }
-            .popover(isPresented: $isModePopupVisible) {
-                ModePopupView()
-            }
-            .popover(isPresented: $isExercisePopupVisible) {
-                ExercisePopupView()
-            }
+        }
+        .popover(isPresented: $isModePopupVisible) {
+            ModePopupView()
+        }
+        .popover(isPresented: $isExercisePopupVisible) {
+            ExercisePopupView()
         }
     }
     
@@ -151,6 +151,7 @@ struct HomeScreen: View {
                     .font(.custom("VT323-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
+                    .foregroundStyle(Color.white)
                     .background(Color.gray.opacity(0.6))
                     .cornerRadius(10)
                     .shadow(radius: 4)
@@ -162,9 +163,9 @@ struct HomeScreen: View {
             }) {
                 Text("SET GOALS")
                     .font(.custom("VT323-Regular", size: 18))
-//                    .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity)
+                    .foregroundStyle(Color.white)
                     .background(Color.gray.opacity(0.6))
                     .cornerRadius(10)
                     .shadow(radius: 4)
@@ -216,6 +217,7 @@ struct HomeScreen: View {
 
 // MARK: - Subcomponents
 
+
 struct TimerSettingView: View {
     @Binding var isPresented: Bool
     @EnvironmentObject var model: MyModel
@@ -225,6 +227,7 @@ struct TimerSettingView: View {
     @State private var showAlert = false
     @Binding var stepsTaken: Double
     @Binding var exerciseMinutes: Double
+    @StateObject private var userViewModel = UserViewModel()
     
     var body: some View {
         VStack {
@@ -267,6 +270,10 @@ struct TimerSettingView: View {
             if let activeMode = modes.first(where: { $0.isSelected }) {
                 activeMode.isActive = false
                 activeMode.isLocked = false
+                // Update points based on blocked time calculation
+                if let userId = Auth.auth().currentUser?.uid {
+                    await userViewModel.updateUserPoints(userId: userId)
+                }
                 print("Unlock set")
             }
             try? modelContext.save()
