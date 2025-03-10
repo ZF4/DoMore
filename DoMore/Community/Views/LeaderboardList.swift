@@ -16,6 +16,11 @@ struct LeaderboardList: View {
         VStack {
             Text("COMMUNITY")
                 .font(.custom("ShareTechMono-Regular", size: 30))
+            
+            Text("COMPETE AND EARN REWARDS")
+                .font(.custom("ShareTechMono-Regular", size: 12))
+                .foregroundStyle(Color.gray)
+            
             ScrollView {
                 if isLoading {
                     ProgressView()

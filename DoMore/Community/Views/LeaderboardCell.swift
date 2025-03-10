@@ -11,25 +11,43 @@ struct LeaderboardCell: View {
     var rank: Int?
     var user: UserModel?
     var body: some View {
-        VStack {
+        VStack(alignment: .trailing) {
+            LeaderboardTemplate(rank: rank, user: user)
+        }
+    }
+}
+
+struct LeaderboardTemplate: View {
+    var rank: Int?
+    var user: UserModel?
+    var body: some View {
             HStack {
-                Text(String(rank ?? 0))
-                    .font(.custom("ShareTechMono-Regular", size: 30))
-                    .padding(.trailing, 10)
+                if rank == 1 {
+                    Text(String(rank ?? 0))
+                        .font(.custom("ShareTechMono-Regular", size: 30))
+                        .padding(.trailing, 10)
+                        .foregroundStyle(Color.yellow)
+                    
+                } else {
+                    Text(String(rank ?? 0))
+                        .font(.custom("ShareTechMono-Regular", size: 30))
+                        .padding(.trailing, 10)
+                }
                 
                 CircularProfileImageView(user: user, size: .medium)
                 
                 Text(user?.username ?? "username")
                     .font(.custom("ShareTechMono-Regular", size: 30))
                     .padding(.trailing, 10)
+                Spacer()
+                
                 Text(String(user?.points ?? 0))
                     .font(.custom("ShareTechMono-Regular", size: 25))
-                Spacer()
+                
             }
             .padding(.horizontal)
             
             Divider()
-        }
     }
 }
 
@@ -44,6 +62,7 @@ enum ProfileImageSize {
     case medium
     case large
     case xLarge
+    case xxLarge
     
     var demension: CGFloat {
         switch self {
@@ -53,6 +72,7 @@ enum ProfileImageSize {
         case .medium: return 48
         case .large: return 64
         case .xLarge: return 80
+        case .xxLarge: return 100
         }
     }
 }
@@ -65,6 +85,8 @@ struct CircularProfileImageView: View {
     @Environment(\.colorScheme) var colorScheme
     var user: UserModel?
     let size: ProfileImageSize
+    var image: String?
+    let defaultImage: String = "https://i.imgur.com/kIYMHRH.png"
 
     var body: some View {
         if let imageUrl = user?.profilePicture {
@@ -75,8 +97,9 @@ struct CircularProfileImageView: View {
                 .background(Color.gray.opacity(0.3))
                 .clipShape(Circle())
         } else {
-            Image("noPicture")
+            KFImage(URL(string: image ?? defaultImage))
                 .resizable()
+                .scaledToFill()
                 .frame(width: size.demension, height: size.demension)
                 .background(Color.gray.opacity(0.3))
                 .clipShape(Circle())
@@ -84,8 +107,5 @@ struct CircularProfileImageView: View {
     }
 }
 
-//#Preview {
-//    CircularProfileImageView(user: UserModel(id: "", username: "", profilePicture: "", points: 0), size: .medium)
-//}
 
 

@@ -10,8 +10,9 @@ import Foundation
 struct UserModel: Codable {
     let id: String
     let username: String
-    var profilePicture: String
+    var profilePicture: String?
     var points: Int
+    var isDev: Bool? = false
     
     enum CodingKeys: String, CodingKey {
         case id
