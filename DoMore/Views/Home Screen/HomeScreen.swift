@@ -33,7 +33,7 @@ struct HomeScreen: View {
             
             if (modes.first(where: {$0.isActive == true }) == nil) {
                 //MARK: Remove isAuthorized for prod
-                if (isHealthKitAuthorized && isFamilyAuthorized) || isAuthorized {
+                if (isHealthKitAuthorized && isFamilyAuthorized) {
                     modeSelectionButtons
                 }
             }
@@ -41,6 +41,7 @@ struct HomeScreen: View {
                 TimerSettingView(isPresented: .constant(true), stepsTaken: $stepsTaken, exerciseMinutes: $exerciseMinutes)
                     .environmentObject(model)
             }
+            Spacer()
         }
         .onAppear {
             fetchHealthData()
@@ -67,17 +68,16 @@ struct HomeScreen: View {
     }
     
     private var headerSection: some View {
-        VStack(alignment: .leading) {
-            Text("SET THE G0ALS")
+        VStack(alignment: .center) {
+            Text("STRIDE")
                 .font(.custom("ShareTechMono-Regular", size: 50))
             
-            Text("D0 THE W0RK")
-                .font(.custom("ShareTechMono-Regular", size: 50))
-            
-            if isHealthKitAuthorized {
-                goalDisplay
-            } else {
-                authorizationRequest
+            VStack {
+                if isHealthKitAuthorized {
+                    goalDisplay
+                } else {
+                    authorizationRequest
+                }
             }
         }
         .padding()
@@ -148,7 +148,7 @@ struct HomeScreen: View {
                 isModePopupVisible = true
             }) {
                 Text("SELECT MODE")
-                    .font(.custom("VT323-Regular", size: 18))
+                    .font(.custom("ShareTechMono-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(Color.white)
@@ -162,7 +162,7 @@ struct HomeScreen: View {
                 isExercisePopupVisible = true
             }) {
                 Text("SET GOALS")
-                    .font(.custom("VT323-Regular", size: 18))
+                    .font(.custom("ShareTechMono-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(Color.white)

@@ -26,7 +26,7 @@ public struct BackgroundComponent: View {
                 .shadow(radius: 4)
 
             Text("SLIDE TO LOCK")
-                .font(.custom("VT323-Regular", size: 18))
+                .font(.custom("ShareTechMono-Regular", size: 18))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
         }

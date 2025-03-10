@@ -37,7 +37,7 @@ class UserViewModel: ObservableObject {
         let userRef = db.collection(Path.FireStore.profiles).document(userId)
         
         // Create new user with username
-        let newUser = UserModel(id: userId, username: username, profilePicture: "", points: 0)
+        let newUser = UserModel(id: userId, username: username, points: 0)
         try? userRef.setData(from: newUser)
         self.currentUser = newUser
     }

@@ -9,6 +9,7 @@ import Foundation
 
 struct Path {
     struct FireStore {
+        static let profilePictures = "profile_pictures"
         static let profiles = "profiles"
     }
 }
