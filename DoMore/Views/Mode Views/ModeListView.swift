@@ -12,6 +12,7 @@ import ManagedSettings
 
 struct ModeList: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.colorScheme) var colorScheme
     @Query private var modes: [BlockModel]
     @State private var selectedModeId: UUID?
     @Environment(\.dismiss) private var dismiss // Applies to DetailView.
@@ -45,14 +46,32 @@ struct ModeList: View {
     
     var body: some View {
         VStack {
-            ForEach(modes) { mode in
-                ModeCellView(
-                    mode: mode,
-                    isSelected: mode.isSelected,
-                    onSelect: {
-                        setSelectMode(mode)
+            if modes.isEmpty {
+                VStack {
+                    HStack {
+                        Text("CREATE A BLOCK MODE")
+                            .font(.custom("ShareTechMono-Regular", size: 20))
+                        
+                        Image(systemName: "arrow.up.forward")
+//                            .foregroundStyle(Color.white)
+                            .font(.system(size: 30))
+                        
                     }
-                )
+                    Text("CREATE MULTIPLE BLOCK MODES TO FIT YOUR NEEDS. SOCIAL MEDIA, GAMES, ETC.")
+                        .font(.custom("ShareTechMono-Regular", size: 13))
+                        .foregroundStyle(colorScheme == .light ? Color.black.opacity(0.5) : Color.white.opacity(0.5))
+                }
+                .padding(.horizontal)
+            } else {
+                ForEach(modes) { mode in
+                    ModeCellView(
+                        mode: mode,
+                        isSelected: mode.isSelected,
+                        onSelect: {
+                            setSelectMode(mode)
+                        }
+                    )
+                }
             }
         }
         .padding(.top)

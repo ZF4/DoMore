@@ -14,6 +14,7 @@ struct CreateModeView: View {
     @EnvironmentObject var model: MyModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @State private var modeTitle: String = ""
     @State var showDelete: Bool = false
     @State var modeTitleAlreadyExists: Bool = false
@@ -50,7 +51,7 @@ struct CreateModeView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("EDIT MODE")
+//        .navigationTitle("EDIT MODE")
         .onAppear {
             if let currentMode {
                 modeTitle = currentMode.title
@@ -70,16 +71,15 @@ struct CreateModeView: View {
     private var nameSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("NAME")
-                .font(.caption)
-                .fontWeight(.semibold)
+                .font(.custom("ShareTechMono-Regular", size: 15))
                 .foregroundColor(.gray)
             
-            TextField("Mode name", text: $modeTitle)
-                .font(.body)
+            TextField("Mode name", text: $modeTitle)                .font(.custom("ShareTechMono-Regular", size: 15))
                 .padding()
-                .foregroundStyle(Color.white)
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
+                .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+                .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                .cornerRadius(10)
+                .shadow(radius: 1)
         }
         .padding(.horizontal)
     }
@@ -87,7 +87,7 @@ struct CreateModeView: View {
     private var selectAppsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("SELECT APPS")
-                .font(.caption)
+                .font(.custom("ShareTechMono-Regular", size: 15))
                 .fontWeight(.semibold)
                 .foregroundColor(.gray)
             
@@ -104,9 +104,10 @@ struct CreateModeView: View {
                 editButton
             }
             .padding()
-            .background(Color.gray.opacity(0.2))
-//            .background(Color.gray)
-            .cornerRadius(8)
+            .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+            .cornerRadius(10)
+            .shadow(radius: 1)
         }
         .familyActivityPicker(isPresented: $isDiscouragedPresented, selection: $model.selectionToDiscourage)
     }
@@ -114,13 +115,11 @@ struct CreateModeView: View {
     private var appSelectionInfo: some View {
         VStack(alignment: .leading) {
             Text("\(model.selectionToDiscourage.applicationTokens.count)  Apps Selected")
-                .font(.body)
+                .font(.custom("ShareTechMono-Regular", size: 15))
                 .bold()
-                .foregroundStyle(.white)
             Text("\(model.selectionToDiscourage.categoryTokens.count)  Categories Selected")
-                .font(.body)
+                .font(.custom("ShareTechMono-Regular", size: 15))
                 .bold()
-                .foregroundStyle(.white)
         }
     }
     
@@ -138,13 +137,14 @@ struct CreateModeView: View {
             modeTitle = ""
         }) {
             Text("DONE")
-                .font(.headline)
+                .font(.custom("ShareTechMono-Regular", size: 15))
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.black)
-                .foregroundColor(.white)
-                .cornerRadius(8)
         }
+        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+        .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 1)
         .padding(.horizontal)
         .padding(.bottom, 20)
     }

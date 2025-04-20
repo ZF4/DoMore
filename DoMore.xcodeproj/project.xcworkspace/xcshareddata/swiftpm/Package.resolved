@@ -1,5 +1,5 @@
 {
-  "originHash" : "6e9a69368781b98a6ea10e4a9c7bb2c9d879ff91083a73f3201f3f3b11f778a7",
+  "originHash" : "2123c6e32025f604edb013988faffbb9be7de96f2a0f2dea953fbc3affeb0680",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -24,17 +24,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "eb523407e4293568ed55590728205c359cbecc5b",
-        "version" : "11.9.0"
+        "revision" : "2e4a4daac9da51f79c131e76cb47e785dd7708c4",
+        "version" : "11.10.0"
       }
     },
     {
       "identity" : "firebasesigninwithapple",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/rebeloper/FirebaseSignInWithApple",
+      "location" : "https://github.com/ZF4/FirebaseSignInWithApple",
       "state" : {
-        "revision" : "3ff1fba64b339a01e156d289b295d16eb8881055",
-        "version" : "5.0.3"
+        "branch" : "main",
+        "revision" : "cd79aef6a980e7a3fe3d634248eb2bcb66a024bb"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "d80e25104abe76d69a134d4ec18f011edd8df06c",
-        "version" : "11.9.0"
+        "revision" : "defe1970a9099d47765592ebd7ac5f5e9fdb57c6",
+        "version" : "11.10.0"
       }
     },
     {

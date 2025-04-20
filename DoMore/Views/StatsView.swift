@@ -9,7 +9,7 @@ import SwiftUI
 import DeviceActivity
 
 struct StatsView: View {
-    @StateObject private var viewModel = StatsViewModel()
+    @EnvironmentObject private var viewModel: StatsViewModel
     
     var body: some View {
         VStack {
@@ -35,10 +35,6 @@ struct StatsView: View {
             
             Text("YOU'RE DOING AWESOME")
                 .font(.custom("ShareTechMono-Regular", size: 16))
-        }
-        .onAppear {
-            viewModel.fetchHealthDataHistory()
-            viewModel.fetchHealthDataToday()
         }
     }
     
@@ -158,5 +154,6 @@ struct StatsView: View {
 
 #Preview {
     StatsView()
+        .environmentObject(StatsViewModel())
 }
 

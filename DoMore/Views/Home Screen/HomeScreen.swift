@@ -14,6 +14,7 @@ import FirebaseAuth
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var model: MyModel
+    @Environment(\.colorScheme) var colorScheme
     @Query private var modes: [BlockModel]
     @Query private var goals: [ExerciseModel]
     @State private var stepsTaken: Double = 0.0
@@ -103,9 +104,6 @@ struct HomeScreen: View {
                 Spacer()
             }
             .padding(.bottom, 10)
-            
-            Text("You're just \(Int(goal.value) - Int(stepsTaken)) steps away from completing your goal!")
-                .font(.custom("ShareTechMono-Regular", size: 17))
         }
     }
     
@@ -117,9 +115,6 @@ struct HomeScreen: View {
                 Spacer()
             }
             .padding(.bottom, 10)
-            
-            Text("You're just \(Int(goal.value) - Int(exerciseMinutes)) minutes away from completing your goal!")
-                .font(.custom("ShareTechMono-Regular", size: 17))
         }
     }
     
@@ -147,28 +142,28 @@ struct HomeScreen: View {
             Button(action: {
                 isModePopupVisible = true
             }) {
-                Text("SELECT MODE")
+                Text(modes.first(where: { $0.isSelected }).map { "MODE: \($0.title.capitalized)"} ?? "SET MODE")
                     .font(.custom("ShareTechMono-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.white)
-                    .background(Color.gray.opacity(0.6))
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
                     .cornerRadius(10)
-                    .shadow(radius: 4)
+                    .shadow(radius: 1)
             }
             .padding(.horizontal)
             
             Button(action: {
                 isExercisePopupVisible = true
             }) {
-                Text("SET GOALS")
+                Text(goals.first(where: { $0.isSelected }).map { "GOAL: \($0.title.capitalized)"} ?? "SET GOALS")
                     .font(.custom("ShareTechMono-Regular", size: 18))
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.white)
-                    .background(Color.gray.opacity(0.6))
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
                     .cornerRadius(10)
-                    .shadow(radius: 4)
+                    .shadow(radius: 1)
             }
             .padding(.horizontal)
         }
@@ -228,6 +223,8 @@ struct TimerSettingView: View {
     @Binding var stepsTaken: Double
     @Binding var exerciseMinutes: Double
     @StateObject private var userViewModel = UserViewModel()
+    @State private var currentTime: TimeInterval = 0
+    @State private var timer: Timer?
     
     var body: some View {
         VStack {
@@ -242,7 +239,6 @@ struct TimerSettingView: View {
                 UnlockButton {
                     Task {
                         await setUnlock()
-                        BlockTimeTracker.shared.stopTracking() // When blocking starts
                     }
                 }
                 .alert("Goals Not Met", isPresented: $showAlert) {
@@ -250,12 +246,54 @@ struct TimerSettingView: View {
                 } message: {
                     Text("You need to complete your fitness goals before unblocking apps.")
                 }
+                
+                VStack {
+                    Text("CURRENT BLOCK TIME")
+                        .font(.custom("ShareTechMono-Regular", size: 15))
+                    
+                    Text(timeString(from: currentTime))
+                        .font(.custom("ShareTechMono-Regular", size: 40))
+                        .monospacedDigit()
+                }
+                .padding(.top, 10)
             }
+        }
+        .onAppear {
+            startTimer()
+            reactivateMode(mode: modes.first(where: {$0.isSelected == true})!)
+        }
+        .onDisappear {
+            timer?.invalidate()
         }
     }
     
+    private func reactivateMode(mode: BlockModel) {
+        var selection = FamilyActivitySelection()
+        if let appTokensData = mode.applicationTokens {
+            selection.applicationTokens = (try? JSONDecoder().decode(Set<ApplicationToken>.self, from: appTokensData)) ?? []
+        }
+        if let categoryTokensData = mode.categoryTokens {
+            selection.categoryTokens = (try? JSONDecoder().decode(Set<ActivityCategoryToken>.self, from: categoryTokensData)) ?? []
+        }
+        MyModel.shared.selectionToDiscourage = selection
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+            currentTime = BlockTimeTracker.shared.getCurrentSessionTime()
+        }
+    }
+    
+    private func timeString(from timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = Int(timeInterval) / 60 % 60
+        let seconds = Int(timeInterval) % 60
+//        let centiseconds = Int((timeInterval.truncatingRemainder(dividingBy: 1)) * 100)
+        return String(format: "%02d:%02d.%02d", hours, minutes, seconds)
+    }
+    
     func setLock() async {
-        model.setShieldRestrictions()
+        model.setShieldRestrictions() // Restore previous shield settings
         if let activeMode = modes.first(where: { $0.isSelected }) {
             activeMode.isActive = true
             activeMode.isLocked = true
@@ -266,10 +304,17 @@ struct TimerSettingView: View {
     
     func setUnlock() async {
         if areGoalsMet() {
-            model.resetDiscouragedItems()
             if let activeMode = modes.first(where: { $0.isSelected }) {
                 activeMode.isActive = false
+                //MARK: REMOVE ISSELECTED, THIS IS SHORT TERM FIX FOR BLOCK LIST RESETTING AFTER APP IS CLOSED ////////////////
+//                activeMode.isSelected = false
                 activeMode.isLocked = false
+                try? modelContext.save()
+                
+                // Now temporarily disable shield without resetting apps
+                model.disableShield()
+                
+                BlockTimeTracker.shared.stopTracking() // When blocking starts
                 // Update points based on blocked time calculation
                 if let userId = Auth.auth().currentUser?.uid {
                     await userViewModel.updateUserPoints(userId: userId)

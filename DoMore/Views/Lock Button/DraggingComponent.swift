@@ -40,7 +40,6 @@ public struct DraggingComponent: View {
                     .disabled(!isUnlocked || isLoading),
                 alignment: .trailing
             )
-        
             .simultaneousGesture(
                 DragGesture()
                     .onChanged { value in

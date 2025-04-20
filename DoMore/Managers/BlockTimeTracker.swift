@@ -6,12 +6,16 @@
 //
 
 import Foundation
+import FirebaseFirestore
+import FirebaseAuth
 
 class BlockTimeTracker {
     static let shared = BlockTimeTracker()
+    private let db = Firestore.firestore()
     
+    // Keep startTime in UserDefaults since it's session-specific
+    private let startTimeKey = "startTime"
     private let totalBlockedTimeKey = "totalBlockedTime"
-    private let startTimeKey = "startTime" // Key for storing start time
     
     private var totalBlockedTime: TimeInterval {
         get {
@@ -21,6 +25,7 @@ class BlockTimeTracker {
             UserDefaults.standard.set(newValue, forKey: totalBlockedTimeKey)
         }
     }
+
     
     private var startTime: Date? {
         get {
@@ -41,6 +46,12 @@ class BlockTimeTracker {
     }
     
     private var endTime: Date?
+    
+    // Add new method to get current session duration
+    func getCurrentSessionTime() -> TimeInterval {
+        guard let start = startTime else { return 0 }
+        return Date().timeIntervalSince(start)
+    }
 
     // Method to start tracking blocked time
     func startTracking() {
@@ -56,6 +67,12 @@ class BlockTimeTracker {
         guard let start = startTime else { return }
         let blockedDuration = endTime?.timeIntervalSince(start) ?? 0
         totalBlockedTime += blockedDuration
+        
+        // Sync to Firebase
+        if let userId = Auth.auth().currentUser?.uid {
+            let userRef = Firestore.firestore().collection(Path.FireStore.profiles).document(userId)
+            userRef.updateData(["totalBlockedTime": totalBlockedTime])
+        }
         print("Blocked Duration: \(blockedDuration) seconds") // Log the duration
         
         // Reset the start and end times

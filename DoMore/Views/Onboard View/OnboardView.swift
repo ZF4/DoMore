@@ -10,11 +10,12 @@ import SwiftUI
 struct OnboardView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @AppStorage("didOnboard") private var didOnboard: Bool = false
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @State private var username = ""
     @State private var isCheckingUsername = false
     @State private var usernameError: String?
     @State private var isUsernameValid = false
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
@@ -55,14 +56,14 @@ struct OnboardView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(isUsernameValid ? Color.white : Color.gray.opacity(0.5))
+                .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                .background(colorScheme == .dark ? Color.black : Color.white)
                 .cornerRadius(10)
-                .shadow(radius: 2)
+                .shadow(color: colorScheme == .dark ? Color.white : Color.gray, radius: 1)
                 .disabled(!isUsernameValid || isCheckingUsername)
                 .padding(.top, 10)
             }
             .padding()
-            .tint(.black)
             .navigationDestination(isPresented: .init(
                 get: { didOnboard },
                 set: { _ in }
@@ -89,7 +90,7 @@ struct OnboardView: View {
             return
         }
         
-        guard username.matches(of: /^[a-z0-9._]+$/).count > 0 else {
+        guard username.matches(of: /^[a-zA-Z0-9._]+$/).count > 0 else {
             usernameError = "Username can only contain letters, numbers, dots, and underscores"
             return
         }
@@ -104,7 +105,7 @@ struct OnboardView: View {
         do {
             let isAvailable = try await userViewModel.checkUsernameAvailable(username)
             if isAvailable {
-                userViewModel.createNewUser(username: username)
+                userViewModel.createNewUser(username: username.lowercased())
                 didOnboard = true
             } else {
                 usernameError = "Username is already taken"
