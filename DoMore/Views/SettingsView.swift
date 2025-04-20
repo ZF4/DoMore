@@ -12,6 +12,7 @@ import FirebaseSignInWithApple
 struct SettingsView: View {
     @EnvironmentObject var model: MyModel
     @EnvironmentObject var userViewModel: UserViewModel
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.modelContext) private var modelContext
     @Query private var modes: [BlockModel]
     @State var showSelectPhoto: Bool = false
@@ -19,7 +20,7 @@ struct SettingsView: View {
     var body: some View {
         VStack {
             HStack {
-                CircularProfileImageView(size: .xLarge)
+                CircularProfileImageView(user: userViewModel.currentUser, size: .xLarge)
                 
                 VStack(alignment: .leading) {
                     Text("\(userViewModel.currentUser?.username ?? "No username")")
@@ -37,7 +38,7 @@ struct SettingsView: View {
             if userViewModel.currentUser?.isDev == true {
                 // Existing Buttons
                 Button(action: {
-                    model.resetDiscouragedItems()
+                    model.disableShield()
                     for mode in modes {
                         mode.isActive = false
                         mode.isLocked = false
@@ -52,49 +53,55 @@ struct SettingsView: View {
                         .cornerRadius(15)
                 }
                 .padding(.horizontal)
-                
-                Button(action: {
-                    BlockTimeTracker.shared.resetBlockedTime()
-                    for mode in modes {
-                        mode.isActive = false
-                        mode.isLocked = false
-                    }
-                }) {
-                    Text("RESET BLOCK TIME")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(8)
-                        .background(Color.green)
-                        .cornerRadius(15)
-                }
-                .padding(.horizontal)
             }
+            //MARK: TO ADD CUSTOM IMAGE LATER ///////
+//            Button(action: {
+//                showSelectPhoto = true
+//            }) {
+//                Text("SET PROFILE PICTURE")
+//                    .font(.custom("ShareTechMono-Regular", size: 18))
+//                    .padding()
+//                    .frame(maxWidth: .infinity)
+//                    .cornerRadius(10)
+//                    .shadow(radius: 4)
+//            }
+//            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+//            .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+//            .cornerRadius(10)
+//            .shadow(radius: 1)
+//            .padding(.horizontal)
             
-            Button(action: {
-                showSelectPhoto = true
-            }) {
-                Text("SET PROFILE PICTURE")
-                    .font(.custom("ShareTechMono-Regular", size: 18))
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.white)
-                    .background(Color.gray.opacity(0.6))
-                    .cornerRadius(10)
-                    .shadow(radius: 4)
-            }
-            .padding(.horizontal)
+            ColorPickerView()
             
             Spacer()
             
-            FirebaseSignOutWithAppleButton {
-                FirebaseSignInWithAppleLabel(.signOut)
+            if userViewModel.currentUser?.loginMethod == .apple {
+                FirebaseSignOutWithAppleButton {
+                    FirebaseSignInWithAppleLabel(.signOut)
+                }
+            } else {
+                Button(action: {
+                    userViewModel.signOutUser()
+                }) {
+                    Text("SIGN OUT")
+                        .font(.custom("ShareTechMono-Regular", size: 18))
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .cornerRadius(10)
+                        .shadow(radius: 4)
+                }
+                .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 1)
+                .padding(.horizontal)
             }
         }
         .padding()
-        .popover(isPresented: $showSelectPhoto) {
-            ProfilePictureSelection()
-        }
+        //MARK: TO ADD CUSTOM IMAGE LATER ///////
+//        .popover(isPresented: $showSelectPhoto) {
+//            ProfilePictureSelection()
+//        }
     }
 }
 

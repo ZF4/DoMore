@@ -17,14 +17,14 @@ struct MainView: View {
     var body: some View {
         Group {
             switch firebaseSignInWithApple.state {
-            case .loading:
-                ProgressView()
-            case .authenticating:
-                ProgressView()
+            case .loading, .authenticating:
+                SplashView()
             case .notAuthenticated:
                 SignInView()
             case .authenticated:
-                if userViewModel.isExistingUser {
+                if userViewModel.isLoading {
+                    SplashView()
+                } else if userViewModel.isExistingUser {
                     ContentView()
                         .environmentObject(userViewModel)
                         .onAppear {
@@ -42,6 +42,9 @@ struct MainView: View {
                 Task {
                     await userViewModel.checkExistingUser()
                     await userViewModel.createOrUpdateUser()
+                    await MainActor.run {
+                        userViewModel.isLoading = false
+                    }
                 }
             }
         }

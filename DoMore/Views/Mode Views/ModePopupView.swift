@@ -41,7 +41,7 @@ struct ModePopupView: View {
         }
     }
     private func unselectModes() {
-        model.resetDiscouragedItems()
+        model.disableShield()
     }
 }
 

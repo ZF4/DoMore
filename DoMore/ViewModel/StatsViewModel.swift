@@ -32,6 +32,10 @@ class StatsViewModel: ObservableObject {
         
         // Fetch initial health data
         fetchHealthDataHistory()
+        fetchHealthDataToday()
+        
+        // Set up observers for health data updates
+        setupHealthDataObservers()
     }
     
     private func updateBlockedTime() {
@@ -68,5 +72,23 @@ class StatsViewModel: ObservableObject {
                 self.allTimeMins = allTimeMins
             }
         }
+    }
+    
+    private func setupHealthDataObservers() {
+        HealthKitManager.shared.startObservingHealthData(
+            stepsHandler: { [weak self] steps in
+                DispatchQueue.main.async {
+                    self?.todaysSteps = steps
+                }
+            },
+            exerciseHandler: { [weak self] mins in
+                DispatchQueue.main.async {
+                    self?.todaysMins = mins
+                }
+            },
+            distanceHandler: { _ in
+                // Not used in stats view but required by the method
+            }
+        )
     }
 }

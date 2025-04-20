@@ -1,5 +1,3 @@
-
-
 import SwiftUI
 import SwiftData
 import FamilyControls
@@ -14,6 +12,7 @@ struct Root: App {
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @StateObject var model = MyModel.shared
     @StateObject var store = ManagedSettingsStore()
+    @StateObject var statsViewModel = StatsViewModel()
     
     var body: some Scene {
         WindowGroup {
@@ -21,6 +20,7 @@ struct Root: App {
                 .modelContainer(appContainer)
                 .environmentObject(model)
                 .environmentObject(store)
+                .environmentObject(statsViewModel)
                 .configureFirebaseSignInWithAppleWith(firestoreUserCollectionPath: Path.FireStore.profiles)
         }
     }
@@ -61,4 +61,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         print("Firebase configured successfully")
         return true
     }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+        return .noData
+    }
 }
+
+

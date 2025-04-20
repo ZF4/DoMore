@@ -72,8 +72,8 @@ struct CreateExerciseView: View {
                 TextField("e.g. 5000", text: $inputValue)
                     .keyboardType(.numberPad)
                     .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .foregroundStyle(Color.white)
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
                     .cornerRadius(10)
                     .shadow(radius: 1)
                     .padding(.horizontal)
@@ -92,13 +92,14 @@ struct CreateExerciseView: View {
             Button(action: saveActivity) {
                 Text("SAVE")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray)
-                    .cornerRadius(12)
-                    .shadow(radius: 3)
             }
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+            .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 1)
             .padding(.horizontal)
             .padding(.bottom, 10)
             
@@ -121,7 +122,7 @@ struct CreateExerciseView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("SET GOAL")
+//        .navigationTitle("SET GOAL")
         .onAppear {
             if let currentGoal {
                 goalID = currentGoal.id

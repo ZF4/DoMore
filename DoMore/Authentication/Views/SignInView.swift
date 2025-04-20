@@ -9,8 +9,9 @@ import SwiftUI
 import FirebaseSignInWithApple
 
 struct SignInView: View {
-    
     @Environment(\.firebaseSignInWithApple) private var firebaseSignInWithApple
+    @Environment(\.colorScheme) var colorScheme
+    @State var showMobeSignIn: Bool = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -49,19 +50,31 @@ struct SignInView: View {
                 Text("TAKE BACK YOUR TIME, ONE STEP AT A TIME")
                     .font(.custom("ShareTechMono-Regular", size: 12))
                     .padding(.bottom, 20)
-                    
+                
                 FirebaseSignInWithAppleButton {
                     FirebaseSignInWithAppleLabel(.signIn)
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 20)
                 
-                Text("EMAIL LOGIN COMING SOON")
-                    .font(.custom("ShareTechMono-Regular", size: 11))
-                    .foregroundStyle(Color.gray)
-                    .padding(.bottom, 30)
                 
+                Button {
+                    showMobeSignIn.toggle()
+                } label: {
+                    Text("MOBILE SIGN IN")
+                        .font(.custom("ShareTechMono-Regular", size: 12))
+                        .padding()
+                        .frame(maxWidth: 150)
+                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+                        .background(colorScheme == .dark ? Color.black : Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: colorScheme == .dark ? Color.white : Color.gray, radius: 1)
+                }
             }
             .padding(.bottom, 20)
+        }
+        .popover(isPresented: $showMobeSignIn) {
+            MobileSignInView()
+                .presentationBackground(.ultraThinMaterial)
         }
     }
 }

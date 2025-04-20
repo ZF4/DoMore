@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B612AA812D8F5625003C8A77 /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = B612AA802D8F5625003C8A77 /* FirebaseSignInWithApple */; };
 		B627A7802D78F5C4003F617A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B627A77F2D78F5C4003F617A /* Kingfisher */; };
-		B6B79A7A2D7036590083C2CC /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = B6B79A792D7036590083C2CC /* FirebaseSignInWithApple */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B612AA812D8F5625003C8A77 /* FirebaseSignInWithApple in Frameworks */,
 				B627A7802D78F5C4003F617A /* Kingfisher in Frameworks */,
-				B6B79A7A2D7036590083C2CC /* FirebaseSignInWithApple in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,8 +132,8 @@
 			);
 			name = DoMore;
 			packageProductDependencies = (
-				B6B79A792D7036590083C2CC /* FirebaseSignInWithApple */,
 				B627A77F2D78F5C4003F617A /* Kingfisher */,
+				B612AA802D8F5625003C8A77 /* FirebaseSignInWithApple */,
 			);
 			productName = DoMore;
 			productReference = B64E3B492D3345A600E663E9 /* DoMore.app */;
@@ -218,8 +218,8 @@
 			mainGroup = B64E3B402D3345A600E663E9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B6B79A782D7036590083C2CC /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */,
 				B627A77E2D78F5C4003F617A /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				B612AA7F2D8F5625003C8A77 /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B64E3B4A2D3345A600E663E9 /* Products */;
@@ -596,6 +596,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B612AA7F2D8F5625003C8A77 /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ZF4/FirebaseSignInWithApple";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		B627A77E2D78F5C4003F617A /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -604,26 +612,18 @@
 				minimumVersion = 8.3.0;
 			};
 		};
-		B6B79A782D7036590083C2CC /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rebeloper/FirebaseSignInWithApple";
-			requirement = {
-				kind = exactVersion;
-				version = 5.0.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B612AA802D8F5625003C8A77 /* FirebaseSignInWithApple */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B612AA7F2D8F5625003C8A77 /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */;
+			productName = FirebaseSignInWithApple;
+		};
 		B627A77F2D78F5C4003F617A /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B627A77E2D78F5C4003F617A /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		B6B79A792D7036590083C2CC /* FirebaseSignInWithApple */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B6B79A782D7036590083C2CC /* XCRemoteSwiftPackageReference "FirebaseSignInWithApple" */;
-			productName = FirebaseSignInWithApple;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
