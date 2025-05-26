@@ -70,9 +70,14 @@ struct StatsView: View {
                             .font(.custom("ShareTechMono-Regular", size: 20))
                         
                     }
-                    
-                    Text("days")
-                        .font(.custom("ShareTechMono-Regular", size: 40))
+                    if viewModel.daysBlocked == 1 {
+                        Text("day")
+                            .font(.custom("ShareTechMono-Regular", size: 40))
+                        
+                    } else {
+                        Text("days")
+                            .font(.custom("ShareTechMono-Regular", size: 40))
+                    }
                 }
             }
         }

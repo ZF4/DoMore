@@ -347,6 +347,7 @@ struct TimerSettingView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let preview = Preview()
     preview.addBlockExamples(BlockModel.sampleItems)
@@ -355,3 +356,4 @@ struct TimerSettingView: View {
         .environmentObject(MyModel())
         .modelContainer(preview.modelContainer)
 }
+#endif

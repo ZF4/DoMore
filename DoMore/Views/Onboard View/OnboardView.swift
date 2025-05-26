@@ -119,14 +119,14 @@ struct OnboardView: View {
 }
 
 struct OutlinedTextFieldStyle: TextFieldStyle {
-    
+    @Environment(\.colorScheme) var colorScheme
     @State var icon: Image?
     
     func _body(configuration: TextField<Self._Label>) -> some View {
         HStack {
             if icon != nil {
                 icon
-                    .foregroundColor(Color(UIColor.black))
+                    .foregroundColor(colorScheme == .dark ? .gray : .black)
             }
             configuration
         }
