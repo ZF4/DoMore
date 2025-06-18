@@ -139,6 +139,14 @@ class UserViewModel: ObservableObject {
             print("Error in createOrUpdateUser: \(error)")
         }
     }
+    
+    func deleteUserAccount() async throws {
+        guard let currentUser = currentUser else {
+            throw URLError(.badURL)
+        }
+        
+    }
+    
     func signOutUser() {
         try? Auth.auth().signOut() //signs out backend
         UserDefaults.standard.removeObject(forKey: "didOnboard") // Add this line

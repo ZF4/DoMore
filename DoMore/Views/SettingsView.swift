@@ -75,6 +75,22 @@ struct SettingsView: View {
             
             Spacer()
             
+            Button(action: {
+                userViewModel.signOutUser()
+            }) {
+                Text("DELETE ACCOUNT")
+                    .font(.custom("ShareTechMono-Regular", size: 18))
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(10)
+                    .shadow(radius: 4)
+            }
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black)
+            .background(colorScheme == .dark ? Color.gray.opacity(0.6) : Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 1)
+            .padding(.horizontal)
+            
             if userViewModel.currentUser?.loginMethod == .apple {
                 FirebaseSignOutWithAppleButton {
                     FirebaseSignInWithAppleLabel(.signOut)
