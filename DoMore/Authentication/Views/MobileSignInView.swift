@@ -27,7 +27,7 @@ struct MobileSignInView: View {
                 // MARK: Custom TextField
                 
                 if !isTextSent {
-                    CustomTextField(hint: "(800)-273-8255", text: $loginModel.mobileNo, hasEnoughCharacters: $hasEnoughCharacters)
+                    CustomTextField(hint: "+1 (800)-273-8255", text: $loginModel.mobileNo, hasEnoughCharacters: $hasEnoughCharacters)
                         .keyboardType(.numberPad)
                         .padding(.top,50)
                     
