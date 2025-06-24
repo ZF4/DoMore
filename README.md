@@ -34,7 +34,7 @@ Your health and screen time data **never leave your device**. Stride is built wi
 
 ## Status
 
-Stride is currently in **beta** and being tested through TestFlight. If you’d like to participate or contribute, feel free to open an issue or reach out!
+Stride is currently **released**. Please check it out and leave me a review! [App Store](https://apps.apple.com/us/app/stride-lets-move/id6746705178)
 
 ---
 
